@@ -481,10 +481,13 @@
       hintEl.style.display = 'none';
     }
 
-    // Ссылка на яхту
+    // Ссылка «Подробнее о яхте»
+    // Прячем если выбранная яхта = текущая страница (мы и так на ней)
     var moreBtn = document.getElementById('yc-more-btn');
     var yachtUrl = y.urls[lang] || y.urls.ru || '';
-    if (yachtUrl) {
+    var pageSlug  = window.location.pathname.replace(/\/$/, '').split('/').pop();
+    var yachtSlug = yachtUrl.replace(/\/$/, '').split('/').pop();
+    if (yachtUrl && yachtSlug && pageSlug !== yachtSlug) {
       moreBtn.href = yachtUrl;
       moreBtn.style.display = '';
     } else {
@@ -601,6 +604,13 @@
     })();
 
     document.getElementById('yc-book-btn').addEventListener('click', function () {
+      // Закрываем текущий открытый попап (например калькулятор) — иначе при первом
+      // клике Tilda стакает попапы и форма бронирования рендерится ПОД калькулятором.
+      // Триггерим штатный .t-popup__close, чтобы Tilda корректно очистила своё состояние.
+      document.querySelectorAll('.t-popup.t-popup_show .t-popup__close').forEach(function (btn) {
+        btn.click();
+      });
+
       setTimeout(function () {
         var f = FORM_FIELDS[lang] || FORM_FIELDS.ru;
 
