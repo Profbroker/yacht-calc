@@ -406,12 +406,22 @@
   }
 
   // ── Расчёт цены ───────────────────────────────────────────────────────
+  // Для seasonal-яхт: total = h1 + h2 + ... + h{hours} + fee (накопительная сумма)
+  //   стоимость каждого часа задаётся в Sheets явно, total — просто сумма
+  // Для не-seasonal (Princess): rSet[hours] — это уже итоговая цена за пакет часов
   function calcPrice(yacht, hours, season) {
     var rSet = yacht.seasonal
       ? (yacht.rates[season] || yacht.rates.high || yacht.rates.any || {})
       : (yacht.rates.any     || yacht.rates.high || {});
     var base  = rSet[hours] || 0;
-    var total = yacht.seasonal ? base * hours + yacht.fee : base + yacht.fee;
+    var total;
+    if (yacht.seasonal) {
+      total = 0;
+      for (var i = 1; i <= hours; i++) total += (rSet[i] || 0);
+      total += yacht.fee;
+    } else {
+      total = base + yacht.fee;
+    }
     return { base: base, total: total, rSet: rSet };
   }
 
@@ -449,12 +459,16 @@
     // Расшифровка
     var rows = [];
     if (y.seasonal) {
+      // Сумма всех часов без сбора = total - fee
+      var hoursSum = total - y.fee;
       rows.push('<div class="yc-bd-row"><span>' +
-        tpl(T.per_hour, { h: curHours, rate: fmt(base, curCurrency) }) +
-        '</span><span>' + fmt(base * curHours, curCurrency) + '</span></div>');
+        tpl(T.rental, { h: curHours }) +
+        '</span><span>' + fmt(hoursSum, curCurrency) + '</span></div>');
+      // Скидка относительно базовой ставки h1: если бы все часы стоили h1, сколько вышло бы
       var h1Rate = (y.rates[curSeason] || {})[1] || base;
-      if (base < h1Rate) {
-        var saved = (h1Rate - base) * curHours;
+      var noDiscountSum = h1Rate * curHours;
+      if (hoursSum < noDiscountSum) {
+        var saved = noDiscountSum - hoursSum;
         rows.push('<div class="yc-bd-row discount"><span>' + T.discount +
           '</span><span>−' + fmt(saved, curCurrency) + '</span></div>');
       }
