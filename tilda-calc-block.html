@@ -297,6 +297,7 @@
         order.push(id);
         groups[id] = {
           id:             id,
+          slug:           (cols[idx.slug]           || id).trim(),
           name:           (cols[idx.name]           || id).trim(),
           emoji:          (cols[idx.emoji]           || '').trim(),
           fee:            +(cols[idx.fee]            || 0),
@@ -577,31 +578,15 @@
     document.getElementById('yc-wrap').style.display    = '';
     render();
 
-    // Заполняем dropdown яхт в форме из Google Sheets
+    // Имена полей формы бронирования.
+    // YACHT_FIELD — общий для всех языков (служебное, клиент его не видит).
+    // hours — переводится, потому что лейбл клиенту видно.
+    var YACHT_FIELD = 'Yacht';
     var FORM_FIELDS = {
-      ru: { yacht: 'Яхта',  hours: 'Количество часов' },
-      en: { yacht: 'Yacht', hours: 'Hours'             },
-      az: { yacht: 'Yaxta', hours: 'Saat sayı'         }
+      ru: { hours: 'Количество часов' },
+      en: { hours: 'Hours'             },
+      az: { hours: 'Saat sayı'         }
     };
-
-    // Подставляем яхты из таблицы в форму
-    (function populateFormYachts() {
-      var f = FORM_FIELDS[lang] || FORM_FIELDS.ru;
-      var sel = document.querySelector('select[name="' + f.yacht + '"]');
-      if (!sel || !yachts.length) return;
-
-      // Сохраняем первую опцию (placeholder: "Яхта seçin" и т.п.)
-      var placeholder = sel.options[0];
-      sel.innerHTML = '';
-      if (placeholder) sel.appendChild(placeholder);
-
-      yachts.forEach(function (y) {
-        var opt = document.createElement('option');
-        opt.value = y.name;
-        opt.textContent = y.name;
-        sel.appendChild(opt);
-      });
-    })();
 
     document.getElementById('yc-book-btn').addEventListener('click', function () {
       // Закрываем текущий открытый попап (например калькулятор) — иначе при первом
@@ -614,17 +599,12 @@
       setTimeout(function () {
         var f = FORM_FIELDS[lang] || FORM_FIELDS.ru;
 
-        // Яхта — select
-        var yachtSel = document.querySelector('select[name="' + f.yacht + '"]');
-        if (yachtSel && curYacht) {
-          for (var i = 0; i < yachtSel.options.length; i++) {
-            if (yachtSel.options[i].value.trim() === curYacht.name.trim() ||
-                yachtSel.options[i].text.trim()  === curYacht.name.trim()) {
-              yachtSel.selectedIndex = i;
-              yachtSel.dispatchEvent(new Event('change', { bubbles: true }));
-              break;
-            }
-          }
+        // Slug яхты — text input (Yacht). Подставляем slug из выбранной яхты.
+        var yachtInp = document.querySelector('input[name="' + YACHT_FIELD + '"]');
+        if (yachtInp && curYacht) {
+          yachtInp.value = curYacht.slug || curYacht.id;
+          yachtInp.dispatchEvent(new Event('input',  { bubbles: true }));
+          yachtInp.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
         // Часы — number input
