@@ -406,22 +406,19 @@
   }
 
   // ── Расчёт цены ───────────────────────────────────────────────────────
-  // Для seasonal-яхт: total = h1 + h2 + ... + h{hours} + fee (накопительная сумма)
-  //   стоимость каждого часа задаётся в Sheets явно, total — просто сумма
-  // Для не-seasonal (Princess): rSet[hours] — это уже итоговая цена за пакет часов
+  // Универсальная логика для всех яхт: total = h1 + h2 + ... + h{hours} + fee
+  // Стоимость каждого часа задаётся в Sheets явно (h1..h9), total — сумма.
+  // Если час в подарок — поставь 0 для соответствующего hN в Sheets.
+  // Поле seasonal=yes/no влияет только на выбор сезонного rateset (high/low),
+  // а не на саму формулу расчёта.
   function calcPrice(yacht, hours, season) {
     var rSet = yacht.seasonal
       ? (yacht.rates[season] || yacht.rates.high || yacht.rates.any || {})
       : (yacht.rates.any     || yacht.rates.high || {});
-    var base  = rSet[hours] || 0;
-    var total;
-    if (yacht.seasonal) {
-      total = 0;
-      for (var i = 1; i <= hours; i++) total += (rSet[i] || 0);
-      total += yacht.fee;
-    } else {
-      total = base + yacht.fee;
-    }
+    var base = rSet[hours] || 0;
+    var total = 0;
+    for (var i = 1; i <= hours; i++) total += (rSet[i] || 0);
+    total += yacht.fee;
     return { base: base, total: total, rSet: rSet };
   }
 
@@ -456,30 +453,19 @@
     document.getElementById('yc-fee-note').textContent =
       tpl(T.fee_note, { fee: fmt(y.fee, curCurrency) });
 
-    // Расшифровка
+    // Расшифровка — единая логика для всех яхт (seasonal и не-seasonal)
     var rows = [];
-    if (y.seasonal) {
-      // Сумма всех часов без сбора = total - fee
-      var hoursSum = total - y.fee;
-      rows.push('<div class="yc-bd-row"><span>' +
-        tpl(T.rental, { h: curHours }) +
-        '</span><span>' + fmt(hoursSum, curCurrency) + '</span></div>');
-      // Скидка относительно базовой ставки h1: если бы все часы стоили h1, сколько вышло бы
-      var h1Rate = (y.rates[curSeason] || {})[1] || base;
-      var noDiscountSum = h1Rate * curHours;
-      if (hoursSum < noDiscountSum) {
-        var saved = noDiscountSum - hoursSum;
-        rows.push('<div class="yc-bd-row discount"><span>' + T.discount +
-          '</span><span>−' + fmt(saved, curCurrency) + '</span></div>');
-      }
-    } else {
-      rows.push('<div class="yc-bd-row"><span>' +
-        tpl(T.rental, { h: curHours }) +
-        '</span><span>' + fmt(base, curCurrency) + '</span></div>');
-      if (curHours > 1 && rSet[curHours] === rSet[curHours - 1] && rSet[curHours] > 0) {
-        rows.push('<div class="yc-bd-row gift"><span>' +
-          tpl(T.gift, { h: curHours }) + '</span><span></span></div>');
-      }
+    var hoursSum = total - y.fee;
+    rows.push('<div class="yc-bd-row"><span>' +
+      tpl(T.rental, { h: curHours }) +
+      '</span><span>' + fmt(hoursSum, curCurrency) + '</span></div>');
+    // Скидка относительно базовой ставки h1: если бы все часы стоили h1, сколько вышло бы
+    var h1Rate = rSet[1] || base;
+    var noDiscountSum = h1Rate * curHours;
+    if (hoursSum < noDiscountSum) {
+      var saved = noDiscountSum - hoursSum;
+      rows.push('<div class="yc-bd-row discount"><span>' + T.discount +
+        '</span><span>−' + fmt(saved, curCurrency) + '</span></div>');
     }
     rows.push('<div class="yc-bd-row"><span>' + T.svc_fee +
       '</span><span>' + fmt(y.fee, curCurrency) + '</span></div>');
