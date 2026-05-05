@@ -573,7 +573,32 @@
       btn.textContent = emoji + label;
     });
 
-    curYacht = yachts[0];
+    /* Pre-select яхты по slug в URL.
+       Если открыли калькулятор со страницы конкретной яхты
+       (например /ru/yachts/caspian) — пытаемся найти яхту чей URL
+       заканчивается на этот slug. Если не нашли — берём первую.
+       Сравнение case-insensitive. */
+    var pageSlug = window.location.pathname.replace(/\/$/, '').split('/').pop().toLowerCase();
+    var matchByUrl = yachts.filter(function (y) {
+      var urls = y.urls || {};
+      for (var l in urls) {
+        var u = urls[l];
+        if (u) {
+          var s = u.replace(/\/$/, '').split('/').pop().toLowerCase();
+          if (s === pageSlug) return true;
+        }
+      }
+      if ((y.id   || '').toLowerCase() === pageSlug) return true;
+      if ((y.slug || '').toLowerCase() === pageSlug) return true;
+      return false;
+    })[0];
+    curYacht = matchByUrl || yachts[0];
+
+    /* подсветить активную кнопку выбранной яхты */
+    document.querySelectorAll('[data-yacht]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.yacht === curYacht.id);
+    });
+
     document.getElementById('yc-loading').style.display = 'none';
     document.getElementById('yc-wrap').style.display    = '';
     render();
