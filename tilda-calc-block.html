@@ -486,8 +486,9 @@
     // Прячем если выбранная яхта = текущая страница (мы и так на ней)
     var moreBtn = document.getElementById('yc-more-btn');
     var yachtUrl = y.urls[lang] || y.urls.ru || '';
-    var pageSlug  = window.location.pathname.replace(/\/$/, '').split('/').pop();
-    var yachtSlug = yachtUrl.replace(/\/$/, '').split('/').pop();
+    /* case-insensitive: slug в Sheets может быть Alora, URL — alora */
+    var pageSlug  = window.location.pathname.replace(/\/$/, '').split('/').pop().toLowerCase();
+    var yachtSlug = yachtUrl.replace(/\/$/, '').split('/').pop().toLowerCase();
     if (yachtUrl && yachtSlug && pageSlug !== yachtSlug) {
       moreBtn.href = yachtUrl;
       moreBtn.style.display = '';
