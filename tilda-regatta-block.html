@@ -27,7 +27,7 @@
   }
   .yr-num-label { font-size: 15px; color: #1f2937; font-weight: 500; }
   .yr-num-hint  { font-size: 12px; color: #9ca3af; margin-top: 4px; }
-  .yr-num-note  { font-size: 12px; color: #6b7280; margin-top: 14px; line-height: 1.5; }
+  .yr-num-note  { font-size: 13px; color: #374151; font-weight: 600; margin-top: 14px; line-height: 1.5; }
 
   #yr-participants {
     width: 110px; padding: 11px 14px;
@@ -126,7 +126,7 @@
         <div class="yr-num-label" id="yr-lbl-participants"></div>
         <div class="yr-num-hint" id="yr-participants-hint"></div>
       </div>
-      <input type="number" id="yr-participants" min="10" max="31" value="21" inputmode="numeric">
+      <input type="number" id="yr-participants" min="10" max="31" value="31" inputmode="numeric">
     </div>
     <div class="yr-num-note" id="yr-participants-note"></div>
   </div>
@@ -388,7 +388,7 @@
 
   function getN() {
     var n = parseInt(document.getElementById('yr-participants').value, 10);
-    if (isNaN(n)) n = 21;
+    if (isNaN(n)) n = 31;
     if (n < 10) n = 10;
     if (n > 31) n = 31;
     return n;
