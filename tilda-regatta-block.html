@@ -27,6 +27,7 @@
   }
   .yr-num-label { font-size: 15px; color: #1f2937; font-weight: 500; }
   .yr-num-hint  { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+  .yr-num-note  { font-size: 12px; color: #6b7280; margin-top: 14px; line-height: 1.5; }
 
   #yr-participants {
     width: 110px; padding: 11px 14px;
@@ -125,8 +126,9 @@
         <div class="yr-num-label" id="yr-lbl-participants"></div>
         <div class="yr-num-hint" id="yr-participants-hint"></div>
       </div>
-      <input type="number" id="yr-participants" min="10" max="24" value="21" inputmode="numeric">
+      <input type="number" id="yr-participants" min="10" max="31" value="21" inputmode="numeric">
     </div>
+    <div class="yr-num-note" id="yr-participants-note"></div>
   </div>
 
   <div class="yr-section">
@@ -169,7 +171,8 @@
       subtitle:     'Предварительный расчёт стоимости. Окончательная смета формируется после уточнения деталей мероприятия.',
       lbl_base:     'Параметры',
       lbl_participants: 'Количество участников',
-      participants_hint: 'от 10 до 24 человек, до 4 яхт',
+      participants_hint: 'от 10 до 31 человека',
+      participants_note: 'Большее количество — по согласованию. Подробности у менеджера.',
       lbl_options:  'Дополнительные опции',
       lbl_requests: 'По запросу',
       result_label: 'Предварительная стоимость',
@@ -188,7 +191,8 @@
       subtitle:     'Preliminary cost estimate. The final quote is prepared after confirming event details.',
       lbl_base:     'Parameters',
       lbl_participants: 'Number of participants',
-      participants_hint: '10 to 24 people, up to 4 yachts',
+      participants_hint: '10 to 31 people',
+      participants_note: 'Larger groups — by arrangement. Please contact the manager for details.',
       lbl_options:  'Additional options',
       lbl_requests: 'On request',
       result_label: 'Preliminary cost',
@@ -207,7 +211,8 @@
       subtitle:     'İlkin xərc hesablanması. Yekun smeta tədbirin təfərrüatları dəqiqləşdirildikdən sonra hazırlanır.',
       lbl_base:     'Parametrlər',
       lbl_participants: 'İştirakçıların sayı',
-      participants_hint: '10 ilə 24 nəfər arası, 4 yaxtaya qədər',
+      participants_hint: '10 ilə 31 nəfər arası',
+      participants_note: 'Daha böyük qruplar — razılaşma əsasında. Təfərrüatlar üçün menecerlə əlaqə saxlayın.',
       lbl_options:  'Əlavə seçimlər',
       lbl_requests: 'Sorğu əsasında',
       result_label: 'İlkin dəyər',
@@ -319,6 +324,7 @@
     document.getElementById('yr-lbl-base').textContent           = L.lbl_base;
     document.getElementById('yr-lbl-participants').textContent   = L.lbl_participants;
     document.getElementById('yr-participants-hint').textContent  = L.participants_hint;
+    document.getElementById('yr-participants-note').textContent  = L.participants_note;
     document.getElementById('yr-lbl-options').textContent        = L.lbl_options;
     document.getElementById('yr-lbl-requests').textContent       = L.lbl_requests;
     document.getElementById('yr-result-label').textContent       = L.result_label;
@@ -381,7 +387,7 @@
     var n = parseInt(document.getElementById('yr-participants').value, 10);
     if (isNaN(n)) n = 21;
     if (n < 10) n = 10;
-    if (n > 24) n = 24;
+    if (n > 31) n = 31;
     return n;
   }
 
