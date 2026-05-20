@@ -180,6 +180,7 @@
       book:         'Оставить заявку',
       wa:           'Написать в WhatsApp',
       per_unit:     '/ чел',
+      on_request:   'По запросу',
       none:         '—',
       bd_base:      'Спортивная часть',
       bd_subtotal:  'Итого',
@@ -200,6 +201,7 @@
       book:         'Submit request',
       wa:           'Write on WhatsApp',
       per_unit:     '/ pers',
+      on_request:   'On request',
       none:         '—',
       bd_base:      'Sports program',
       bd_subtotal:  'Subtotal',
@@ -220,6 +222,7 @@
       book:         'Sifariş vermək',
       wa:           'WhatsApp-da yazmaq',
       per_unit:     '/ nəf',
+      on_request:   'Sorğu əsasında',
       none:         '—',
       bd_base:      'İdman hissəsi',
       bd_subtotal:  'Cəmi',
@@ -246,9 +249,8 @@
   ];
 
   // ── Google Sheets ─────────────────────────────────────────────────────
-  // gid листа Regatta — заполнить после создания вкладки в общей Sheet.
-  // До тех пор калькулятор работает на FALLBACK_ITEMS.
-  var REGATTA_GID = null; // например: '123456789'
+  // gid листа Regatta в общей yacht-calc Sheet. Если fetch упал — FALLBACK_ITEMS.
+  var REGATTA_GID = '27392128';
   var SHEET_URL = REGATTA_GID
     ? 'https://docs.google.com/spreadsheets/d/e/' +
       '2PACX-1vTA7YQnSpv1mYdQJPz315cy2bL2apUQcPhY-q8i2GJX2wUYd9jAagSehQ1RfA7CYm6dKKntlmvO1AN_' +
@@ -342,9 +344,10 @@
 
       var lbl = document.createElement('label');
       if (it.type === 'option') {
-        var priceStr = it.unit === 'per_person'
-          ? '$' + it.price + ' ' + L.per_unit
-          : '$' + it.price;
+        var priceStr;
+        if (it.unit === 'on_request')      priceStr = L.on_request;
+        else if (it.unit === 'per_person') priceStr = '$' + it.price + ' ' + L.per_unit;
+        else                               priceStr = '$' + it.price;
         lbl.className = 'yr-opt';
         lbl.innerHTML =
           '<div class="yr-opt-check">' +
@@ -403,8 +406,10 @@
 
     items.forEach(function (it) {
       if (it.type !== 'option' || !selected[it.key]) return;
-      var qty = it.unit === 'per_person' ? n : 1;
-      var sum = it.unit === 'per_person' ? it.price * n : it.price;
+      var qty, sum;
+      if (it.unit === 'on_request')      { qty = 1; sum = 0;            }
+      else if (it.unit === 'per_person') { qty = n; sum = it.price * n; }
+      else                               { qty = 1; sum = it.price;     }
       total += sum;
       rows.push({ label: it.name[lang], qty: qty, price: it.price, sum: sum, unit: it.unit });
     });
@@ -427,9 +432,10 @@
     c.rows.forEach(function (r) {
       var row = document.createElement('div');
       row.className = 'yr-bd-row';
-      var rhs = r.unit === 'fixed'
-        ? '$' + fmt(r.sum)
-        : r.qty + ' × $' + r.price + ' = $' + fmt(r.sum);
+      var rhs;
+      if (r.unit === 'on_request')   rhs = L.on_request;
+      else if (r.unit === 'fixed')   rhs = '$' + fmt(r.sum);
+      else                           rhs = r.qty + ' × $' + r.price + ' = $' + fmt(r.sum);
       row.innerHTML = '<span>' + r.label + '</span><span>' + rhs + '</span>';
       bd.appendChild(row);
     });
