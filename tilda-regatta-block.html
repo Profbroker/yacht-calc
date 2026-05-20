@@ -1,0 +1,471 @@
+<meta charset="UTF-8">
+<style>
+  #yr-wrap * { box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
+  #yr-wrap {
+    max-width: 640px; margin: 0 auto; padding: 40px 32px;
+    background: #fff; border: 1px solid #e5e7eb;
+  }
+  #yr-wrap h2 {
+    font-size: 20px; font-weight: 600; color: #0e375e;
+    margin: 0 0 8px; letter-spacing: -.01em;
+  }
+  #yr-subtitle {
+    font-size: 13px; color: #6b7280; margin: 0 0 32px;
+    font-weight: 400; line-height: 1.5;
+  }
+
+  .yr-section { margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid #f3f4f6; }
+  .yr-section:last-of-type { border-bottom: none; padding-bottom: 0; }
+
+  .yr-section-title {
+    font-size: 11px; font-weight: 600; color: #6b7280;
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: 16px;
+  }
+
+  .yr-num-row {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .yr-num-label { font-size: 15px; color: #1f2937; font-weight: 500; }
+  .yr-num-hint  { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+
+  #yr-participants {
+    width: 110px; padding: 11px 14px;
+    border: 1px solid #d1d5db; border-radius: 4px;
+    font-size: 16px; font-weight: 600; color: #0e375e;
+    text-align: center; font-family: inherit;
+  }
+  #yr-participants:focus { outline: none; border-color: #0e375e; }
+  #yr-participants::-webkit-outer-spin-button,
+  #yr-participants::-webkit-inner-spin-button { opacity: 1; }
+
+  .yr-opt {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 12px 0; gap: 16px; cursor: pointer;
+    border-bottom: 1px solid #f9fafb;
+  }
+  .yr-opt:last-child { border-bottom: none; }
+  .yr-opt-check { display: flex; align-items: center; gap: 12px; flex: 1; }
+  .yr-opt input[type=checkbox] {
+    width: 18px; height: 18px; margin: 0; flex: 0 0 auto;
+    accent-color: #0e375e; cursor: pointer;
+  }
+  .yr-opt-text { font-size: 14px; color: #1f2937; line-height: 1.4; }
+  .yr-opt-price { font-size: 14px; color: #4b5563; font-weight: 500; white-space: nowrap; }
+
+  .yr-req { display: flex; align-items: center; gap: 12px; padding: 10px 0; cursor: pointer; }
+  .yr-req input[type=checkbox] {
+    width: 18px; height: 18px; margin: 0; accent-color: #0e375e; cursor: pointer;
+  }
+  .yr-req span { font-size: 14px; color: #4b5563; }
+
+  #yr-result { margin-top: 32px; padding: 24px 0 8px; border-top: 2px solid #0e375e; }
+  #yr-result-label {
+    font-size: 11px; font-weight: 600; color: #6b7280;
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: 8px;
+  }
+  #yr-total {
+    font-size: 36px; font-weight: 700; color: #0e375e; letter-spacing: -.02em;
+  }
+  #yr-total-note { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+
+  #yr-breakdown { margin-top: 20px; padding-top: 20px; border-top: 1px solid #f3f4f6; }
+  .yr-bd-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: #4b5563; margin-bottom: 6px;
+    font-family: 'Roboto Mono', 'Courier New', monospace;
+  }
+  .yr-bd-row.total {
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e7eb;
+    color: #0e375e; font-weight: 600;
+  }
+
+  .yr-cta { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  #yr-book-btn {
+    flex: 1; min-width: 200px; padding: 16px 24px;
+    background: #0e375e; color: #fff !important;
+    text-align: center; text-decoration: none !important;
+    font-size: 13px; font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase; border-radius: 4px;
+    transition: background .15s;
+  }
+  #yr-book-btn:hover { background: #1a4f7a; color: #fff !important; }
+  #yr-wa-btn {
+    padding: 16px 24px; border: 1px solid #0e375e;
+    color: #0e375e !important; text-decoration: none !important;
+    font-size: 13px; font-weight: 600; letter-spacing: .04em;
+    text-transform: uppercase; border-radius: 4px;
+    transition: background .15s; text-align: center;
+  }
+  #yr-wa-btn:hover { background: #f9fafb; }
+
+  #yr-error {
+    display: none; margin-top: 16px; padding: 12px 16px;
+    background: #fef2f2; border: 1px solid #fecaca;
+    color: #991b1b; font-size: 12px; border-radius: 4px;
+  }
+
+  @media (max-width: 600px) {
+    #yr-wrap { padding: 28px 20px; }
+    #yr-total { font-size: 28px; }
+    .yr-cta { flex-direction: column; }
+    #yr-book-btn, #yr-wa-btn { width: 100%; min-width: 0; }
+  }
+</style>
+
+<div id="yr-loading" style="text-align:center;padding:40px;color:#9ca3af;font:14px Montserrat,sans-serif">…</div>
+
+<div id="yr-wrap" style="display:none">
+  <h2 id="yr-title"></h2>
+  <p id="yr-subtitle"></p>
+
+  <div class="yr-section">
+    <div class="yr-section-title" id="yr-lbl-base"></div>
+    <div class="yr-num-row">
+      <div>
+        <div class="yr-num-label" id="yr-lbl-participants"></div>
+        <div class="yr-num-hint" id="yr-participants-hint"></div>
+      </div>
+      <input type="number" id="yr-participants" min="10" max="24" value="21" inputmode="numeric">
+    </div>
+  </div>
+
+  <div class="yr-section">
+    <div class="yr-section-title" id="yr-lbl-options"></div>
+    <div id="yr-options"></div>
+  </div>
+
+  <div class="yr-section">
+    <div class="yr-section-title" id="yr-lbl-requests"></div>
+    <div id="yr-requests"></div>
+  </div>
+
+  <div id="yr-result">
+    <div id="yr-result-label"></div>
+    <div id="yr-total">$0</div>
+    <div id="yr-total-note"></div>
+    <div id="yr-breakdown"></div>
+  </div>
+
+  <div class="yr-cta">
+    <a href="#popup:regatta-form" id="yr-book-btn"></a>
+    <a href="#" id="yr-wa-btn" target="_blank" rel="noopener"></a>
+  </div>
+
+  <div id="yr-error"></div>
+</div>
+
+<script>
+(function () {
+  // ── Язык ──────────────────────────────────────────────────────────────
+  var path = window.location.pathname;
+  var lang = path.indexOf('/en/') !== -1 ? 'en'
+           : path.indexOf('/az/') !== -1 ? 'az'
+           : 'ru';
+
+  // ── Переводы UI ───────────────────────────────────────────────────────
+  var T = {
+    ru: {
+      title:        'Калькулятор корпоративной регаты',
+      subtitle:     'Предварительный расчёт стоимости. Окончательная смета формируется после уточнения деталей мероприятия.',
+      lbl_base:     'Параметры',
+      lbl_participants: 'Количество участников',
+      participants_hint: 'от 10 до 24 человек, до 4 яхт',
+      lbl_options:  'Дополнительные опции',
+      lbl_requests: 'По запросу',
+      result_label: 'Предварительная стоимость',
+      total_note:   'Цены указаны без учёта налогов',
+      book:         'Оставить заявку',
+      wa:           'Написать в WhatsApp',
+      per_unit:     '/ чел',
+      none:         '—',
+      bd_base:      'Спортивная часть',
+      bd_subtotal:  'Итого',
+      err_load:     'Не удалось загрузить актуальные цены. Расчёт выполнен по справочным значениям.',
+      wa_msg:       'Здравствуйте! Интересует корпоративная регата.\n\nКоличество участников: {n}\nДополнительные опции: {opts}\nПо запросу: {req}\nПредварительная сумма: ${total}'
+    },
+    en: {
+      title:        'Corporate Regatta Calculator',
+      subtitle:     'Preliminary cost estimate. The final quote is prepared after confirming event details.',
+      lbl_base:     'Parameters',
+      lbl_participants: 'Number of participants',
+      participants_hint: '10 to 24 people, up to 4 yachts',
+      lbl_options:  'Additional options',
+      lbl_requests: 'On request',
+      result_label: 'Preliminary cost',
+      total_note:   'Prices exclude taxes',
+      book:         'Submit request',
+      wa:           'Write on WhatsApp',
+      per_unit:     '/ pers',
+      none:         '—',
+      bd_base:      'Sports program',
+      bd_subtotal:  'Subtotal',
+      err_load:     'Could not load current prices. Calculation uses reference values.',
+      wa_msg:       'Hello! I am interested in a corporate regatta.\n\nParticipants: {n}\nAdditional options: {opts}\nOn request: {req}\nPreliminary total: ${total}'
+    },
+    az: {
+      title:        'Korporativ regata kalkulyatoru',
+      subtitle:     'İlkin xərc hesablanması. Yekun smeta tədbirin təfərrüatları dəqiqləşdirildikdən sonra hazırlanır.',
+      lbl_base:     'Parametrlər',
+      lbl_participants: 'İştirakçıların sayı',
+      participants_hint: '10 ilə 24 nəfər arası, 4 yaxtaya qədər',
+      lbl_options:  'Əlavə seçimlər',
+      lbl_requests: 'Sorğu əsasında',
+      result_label: 'İlkin dəyər',
+      total_note:   'Qiymətlər vergisizdir',
+      book:         'Sifariş vermək',
+      wa:           'WhatsApp-da yazmaq',
+      per_unit:     '/ nəf',
+      none:         '—',
+      bd_base:      'İdman hissəsi',
+      bd_subtotal:  'Cəmi',
+      err_load:     'Aktual qiymətlər yüklənmədi. Hesablamada istinad dəyərlərindən istifadə edildi.',
+      wa_msg:       'Salam! Korporativ regata ilə maraqlanıram.\n\nİştirakçılar: {n}\nƏlavə seçimlər: {opts}\nSorğu əsasında: {req}\nİlkin məbləğ: ${total}'
+    }
+  };
+  var L = T[lang];
+
+  // ── Fallback цены (используется если Sheets недоступен) ───────────────
+  // Структура соответствует листу Regatta в Google Sheet:
+  //   key, name_ru, name_en, name_az, price, unit, type
+  var FALLBACK_ITEMS = [
+    { key: 'base',           type: 'base',    unit: 'per_person', price: 158, name: { ru: 'Спортивная часть',     en: 'Sports program',     az: 'İdman hissəsi' } },
+    { key: 'gloves',         type: 'option',  unit: 'per_person', price: 10,  name: { ru: 'Перчатки',             en: 'Gloves',             az: 'Əlcəklər' } },
+    { key: 'polo',           type: 'option',  unit: 'per_person', price: 40,  name: { ru: 'Поло с логотипом',     en: 'Branded polo',       az: 'Loqolu polo' } },
+    { key: 'caps',           type: 'option',  unit: 'per_person', price: 40,  name: { ru: 'Кепки',                en: 'Caps',               az: 'Kepkalar' } },
+    { key: 'cup',            type: 'option',  unit: 'fixed',      price: 150, name: { ru: 'Кубок победителю',     en: 'Winner cup',         az: 'Qalib kuboku' } },
+    { key: 'medals',         type: 'option',  unit: 'fixed',      price: 105, name: { ru: 'Медали (комплект 3)',  en: 'Medals (set of 3)',  az: 'Medallar (3 ədəd)' } },
+    { key: 'yacht_branding', type: 'option',  unit: 'fixed',      price: 300, name: { ru: 'Брендинг яхт',         en: 'Yacht branding',     az: 'Yaxtaların brendinqi' } },
+    { key: 'photo_video',    type: 'request', unit: 'on_request', price: 0,   name: { ru: 'Фотограф и видеограф', en: 'Photo and video',    az: 'Foto və video' } },
+    { key: 'host',           type: 'request', unit: 'on_request', price: 0,   name: { ru: 'Ведущий',              en: 'Host',               az: 'Aparıcı' } },
+    { key: 'banquet',        type: 'request', unit: 'on_request', price: 0,   name: { ru: 'Банкет',               en: 'Banquet',            az: 'Banket' } }
+  ];
+
+  // ── Google Sheets ─────────────────────────────────────────────────────
+  // gid листа Regatta — заполнить после создания вкладки в общей Sheet.
+  // До тех пор калькулятор работает на FALLBACK_ITEMS.
+  var REGATTA_GID = null; // например: '123456789'
+  var SHEET_URL = REGATTA_GID
+    ? 'https://docs.google.com/spreadsheets/d/e/' +
+      '2PACX-1vTA7YQnSpv1mYdQJPz315cy2bL2apUQcPhY-q8i2GJX2wUYd9jAagSehQ1RfA7CYm6dKKntlmvO1AN_' +
+      '/pub?output=csv&gid=' + REGATTA_GID
+    : null;
+
+  // ── WhatsApp ──────────────────────────────────────────────────────────
+  var WA_NUMBER = '994502350235';
+
+  // ── State ────────────────────────────────────────────────────────────
+  var items = FALLBACK_ITEMS.slice();
+  var selected = {};
+
+  // ── CSV parser ────────────────────────────────────────────────────────
+  function parseCSV(text) {
+    var rows = [];
+    var lines = text.trim().split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var cols = [], cur = '', inQ = false;
+      for (var j = 0; j < lines[i].length; j++) {
+        var c = lines[i][j];
+        if (c === '"') inQ = !inQ;
+        else if (c === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else cur += c;
+      }
+      cols.push(cur.trim());
+      rows.push(cols);
+    }
+    return rows;
+  }
+
+  function loadFromSheet() {
+    if (!SHEET_URL) return Promise.resolve();
+    return fetch(SHEET_URL, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+      .then(function (text) {
+        var rows = parseCSV(text);
+        if (rows.length < 2) throw new Error('empty sheet');
+        var header = rows[0].map(function (c) { return c.toLowerCase().trim(); });
+        var idx = function (name) { return header.indexOf(name); };
+        var iKey = idx('key'), iType = idx('type'), iUnit = idx('unit'), iPrice = idx('price');
+        var iNameRu = idx('name_ru'), iNameEn = idx('name_en'), iNameAz = idx('name_az');
+        if (iKey < 0 || iPrice < 0) throw new Error('bad header');
+
+        var fromSheet = [];
+        for (var i = 1; i < rows.length; i++) {
+          var r = rows[i];
+          if (!r[iKey]) continue;
+          fromSheet.push({
+            key:   r[iKey],
+            type:  r[iType]  || 'option',
+            unit:  r[iUnit]  || 'per_person',
+            price: parseFloat(r[iPrice]) || 0,
+            name: {
+              ru: r[iNameRu] || r[iKey],
+              en: r[iNameEn] || r[iNameRu] || r[iKey],
+              az: r[iNameAz] || r[iNameRu] || r[iKey]
+            }
+          });
+        }
+        if (fromSheet.length) items = fromSheet;
+      })
+      .catch(function (err) {
+        console.warn('[regatta-calc] sheet load failed, using fallback:', err);
+        var box = document.getElementById('yr-error');
+        if (box) { box.textContent = L.err_load; box.style.display = 'block'; }
+      });
+  }
+
+  function render() {
+    document.getElementById('yr-title').textContent              = L.title;
+    document.getElementById('yr-subtitle').textContent           = L.subtitle;
+    document.getElementById('yr-lbl-base').textContent           = L.lbl_base;
+    document.getElementById('yr-lbl-participants').textContent   = L.lbl_participants;
+    document.getElementById('yr-participants-hint').textContent  = L.participants_hint;
+    document.getElementById('yr-lbl-options').textContent        = L.lbl_options;
+    document.getElementById('yr-lbl-requests').textContent       = L.lbl_requests;
+    document.getElementById('yr-result-label').textContent       = L.result_label;
+    document.getElementById('yr-total-note').textContent         = L.total_note;
+    document.getElementById('yr-book-btn').textContent           = L.book;
+    document.getElementById('yr-wa-btn').textContent             = L.wa;
+
+    var optBox = document.getElementById('yr-options');
+    var reqBox = document.getElementById('yr-requests');
+    optBox.innerHTML = '';
+    reqBox.innerHTML = '';
+
+    items.forEach(function (it) {
+      if (it.type === 'base') return;
+
+      var lbl = document.createElement('label');
+      if (it.type === 'option') {
+        var priceStr = it.unit === 'per_person'
+          ? '$' + it.price + ' ' + L.per_unit
+          : '$' + it.price;
+        lbl.className = 'yr-opt';
+        lbl.innerHTML =
+          '<div class="yr-opt-check">' +
+            '<input type="checkbox" data-key="' + it.key + '">' +
+            '<div class="yr-opt-text">' + it.name[lang] + '</div>' +
+          '</div>' +
+          '<div class="yr-opt-price">' + priceStr + '</div>';
+        optBox.appendChild(lbl);
+      } else if (it.type === 'request') {
+        lbl.className = 'yr-req';
+        lbl.innerHTML =
+          '<input type="checkbox" data-key="' + it.key + '">' +
+          '<span>' + it.name[lang] + '</span>';
+        reqBox.appendChild(lbl);
+      }
+    });
+
+    document.querySelectorAll('#yr-options input, #yr-requests input').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        selected[cb.dataset.key] = cb.checked;
+        recalc();
+      });
+    });
+    document.getElementById('yr-participants').addEventListener('input', recalc);
+    document.getElementById('yr-participants').addEventListener('change', function () {
+      // нормализуем при потере фокуса (если ввели мусор)
+      var inp = document.getElementById('yr-participants');
+      inp.value = getN();
+      recalc();
+    });
+
+    document.getElementById('yr-loading').style.display = 'none';
+    document.getElementById('yr-wrap').style.display    = '';
+
+    recalc();
+    wireCTA();
+  }
+
+  function getN() {
+    var n = parseInt(document.getElementById('yr-participants').value, 10);
+    if (isNaN(n)) n = 21;
+    if (n < 10) n = 10;
+    if (n > 24) n = 24;
+    return n;
+  }
+
+  function fmt(num) { return num.toLocaleString('en-US'); }
+
+  function calc() {
+    var n = getN();
+    var base = null;
+    for (var i = 0; i < items.length; i++) { if (items[i].type === 'base') { base = items[i]; break; } }
+    var basePrice = base ? base.price : 0;
+    var rows = [{ label: L.bd_base, qty: n, price: basePrice, sum: basePrice * n, unit: 'per_person' }];
+    var total = basePrice * n;
+
+    items.forEach(function (it) {
+      if (it.type !== 'option' || !selected[it.key]) return;
+      var qty = it.unit === 'per_person' ? n : 1;
+      var sum = it.unit === 'per_person' ? it.price * n : it.price;
+      total += sum;
+      rows.push({ label: it.name[lang], qty: qty, price: it.price, sum: sum, unit: it.unit });
+    });
+
+    var requests = [];
+    items.forEach(function (it) {
+      if (it.type === 'request' && selected[it.key]) requests.push(it.name[lang]);
+    });
+    var options = rows.slice(1).map(function (r) { return r.label; });
+
+    return { n: n, total: total, rows: rows, requests: requests, options: options };
+  }
+
+  function recalc() {
+    var c = calc();
+    document.getElementById('yr-total').textContent = '$' + fmt(c.total);
+
+    var bd = document.getElementById('yr-breakdown');
+    bd.innerHTML = '';
+    c.rows.forEach(function (r) {
+      var row = document.createElement('div');
+      row.className = 'yr-bd-row';
+      var rhs = r.unit === 'fixed'
+        ? '$' + fmt(r.sum)
+        : r.qty + ' × $' + r.price + ' = $' + fmt(r.sum);
+      row.innerHTML = '<span>' + r.label + '</span><span>' + rhs + '</span>';
+      bd.appendChild(row);
+    });
+    var totalRow = document.createElement('div');
+    totalRow.className = 'yr-bd-row total';
+    totalRow.innerHTML = '<span>' + L.bd_subtotal + '</span><span>$' + fmt(c.total) + '</span>';
+    bd.appendChild(totalRow);
+
+    var msg = L.wa_msg
+      .replace('{n}',     c.n)
+      .replace('{opts}',  c.options.length  ? c.options.join(', ')  : L.none)
+      .replace('{req}',   c.requests.length ? c.requests.join(', ') : L.none)
+      .replace('{total}', fmt(c.total));
+    document.getElementById('yr-wa-btn').href =
+      'https://wa.me/' + WA_NUMBER + '?text=' + encodeURIComponent(msg);
+  }
+
+  function wireCTA() {
+    document.getElementById('yr-book-btn').addEventListener('click', function () {
+      document.querySelectorAll('.t-popup.t-popup_show .t-popup__close').forEach(function (btn) {
+        btn.click();
+      });
+      setTimeout(function () {
+        var c = calc();
+        var fields = {
+          'Participants': String(c.n),
+          'Options':      c.options.length  ? c.options.join(', ')  : '',
+          'Requests':     c.requests.length ? c.requests.join(', ') : '',
+          'Total':        '$' + fmt(c.total)
+        };
+        Object.keys(fields).forEach(function (name) {
+          var inp = document.querySelector('input[name="' + name + '"]');
+          if (!inp) return;
+          inp.value = fields[name];
+          inp.dispatchEvent(new Event('input',  { bubbles: true }));
+          inp.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      }, 400);
+    });
+  }
+
+  // ── Start ─────────────────────────────────────────────────────────────
+  loadFromSheet().then(render);
+})();
+</script>

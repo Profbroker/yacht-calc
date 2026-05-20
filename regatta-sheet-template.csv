@@ -1,0 +1,11 @@
+key,name_ru,name_en,name_az,price,unit,type
+base,Спортивная часть,Sports program,İdman hissəsi,158,per_person,base
+gloves,Перчатки,Gloves,Əlcəklər,10,per_person,option
+polo,Поло с логотипом,Branded polo,Loqolu polo,40,per_person,option
+caps,Кепки,Caps,Kepkalar,40,per_person,option
+cup,Кубок победителю,Winner cup,Qalib kuboku,150,fixed,option
+medals,Медали (комплект 3),Medals (set of 3),Medallar (3 ədəd),105,fixed,option
+yacht_branding,Брендинг яхт,Yacht branding,Yaxtaların brendinqi,300,fixed,option
+photo_video,Фотограф и видеограф,Photo and video,Foto və video,0,on_request,request
+host,Ведущий,Host,Aparıcı,0,on_request,request
+banquet,Банкет,Banquet,Banket,0,on_request,request
