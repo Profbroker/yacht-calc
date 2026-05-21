@@ -1,0 +1,579 @@
+<!--
+  tilda-regatta-page.html
+  Лендинг корпоративной регаты для yacht.az. Один блок, три языка (RU/EN/AZ),
+  определение языка по URL (/ru/, /en/, /az/, default = ru).
+
+  ВАЖНО: цены на сайте в открытую НЕ показываем. Везде «по запросу».
+  Расчёт стоимости — через попап-калькулятор #popup:regatta-calc
+  (он живёт отдельным блоком, отдельный loader tilda-regatta-loader.html).
+
+  Структура (по презентации дизайнера 20 мая 2026):
+    1. HERO — заголовок, лид, две CTA
+    2. WHY  — команда за один день, 4 пункта что развивает
+    3. WHEN — локация + расписание дня
+    4. FLEET — Beneteau 411 / Carter 30 ×3 / MAT 10, ORC
+    5. TURNKEY — что входит / что опционально
+    6. PACKAGES — Базовый / Стандарт / Конференция, БЕЗ ЦЕН
+    7. CTA — финальный блок, контакты
+
+  CSS-префикс: rgp- (regatta page), чтобы не конфликтовать с yr- (calc) и yc- (rental calc).
+-->
+
+<div id="rgp-root">
+<style>
+  #rgp-root { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #0E1726; line-height: 1.55; }
+  #rgp-root * { box-sizing: border-box; }
+  .rgp-section { padding: 80px 24px; max-width: 1180px; margin: 0 auto; }
+  .rgp-section--alt { background: #F6F7F9; max-width: none; padding-left: 24px; padding-right: 24px; }
+  .rgp-section--alt > .rgp-inner { max-width: 1180px; margin: 0 auto; }
+  .rgp-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #7A8294; margin: 0 0 16px; }
+  .rgp-h1 { font-size: 44px; font-weight: 600; line-height: 1.1; letter-spacing: -0.01em; margin: 0 0 20px; color: #0E1726; }
+  .rgp-h2 { font-size: 32px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; margin: 0 0 16px; color: #0E1726; }
+  .rgp-lead { font-size: 18px; line-height: 1.5; color: #2C3340; margin: 0 0 32px; max-width: 720px; }
+  .rgp-text { font-size: 15px; line-height: 1.6; color: #2C3340; }
+  .rgp-text--muted { color: #5A6373; font-size: 14px; }
+
+  /* HERO */
+  .rgp-hero { background: linear-gradient(180deg, #0E375E 0%, #0E1726 100%); color: #fff; padding: 96px 24px 80px; }
+  .rgp-hero-inner { max-width: 1180px; margin: 0 auto; }
+  .rgp-hero .rgp-eyebrow { color: rgba(255,255,255,0.62); }
+  .rgp-hero .rgp-h1 { color: #fff; font-size: 52px; max-width: 880px; }
+  .rgp-hero .rgp-lead { color: rgba(255,255,255,0.85); font-size: 19px; max-width: 740px; }
+
+  /* Buttons */
+  .rgp-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+  .rgp-btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 28px; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; border-radius: 4px; transition: background 0.15s, color 0.15s, border-color 0.15s; cursor: pointer; border: 1px solid transparent; }
+  .rgp-btn--primary { background: #fff; color: #0E375E; }
+  .rgp-btn--primary:hover { background: #E7E9EC; }
+  .rgp-btn--ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,0.45); }
+  .rgp-btn--ghost:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.7); }
+  .rgp-btn--dark { background: #0E375E; color: #fff; }
+  .rgp-btn--dark:hover { background: #0A2A47; }
+  .rgp-btn--outline { background: transparent; color: #0E375E; border-color: #0E375E; }
+  .rgp-btn--outline:hover { background: #0E375E; color: #fff; }
+
+  /* Grid */
+  .rgp-grid { display: grid; gap: 24px; margin-top: 32px; }
+  .rgp-grid--4 { grid-template-columns: repeat(4, 1fr); }
+  .rgp-grid--3 { grid-template-columns: repeat(3, 1fr); }
+  .rgp-grid--2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 900px) {
+    .rgp-grid--4, .rgp-grid--3, .rgp-grid--2 { grid-template-columns: 1fr; }
+    .rgp-section { padding: 56px 20px; }
+    .rgp-hero { padding: 72px 20px 56px; }
+    .rgp-hero .rgp-h1 { font-size: 36px; }
+    .rgp-h1 { font-size: 32px; }
+    .rgp-h2 { font-size: 26px; }
+    .rgp-lead { font-size: 16px; }
+  }
+
+  .rgp-card { background: #fff; border: 1px solid #E1E4E9; border-radius: 4px; padding: 24px; }
+  .rgp-card--dark { background: #0E1726; color: #fff; border-color: #0E1726; }
+  .rgp-card--dark .rgp-card-num { color: rgba(255,255,255,0.6); }
+  .rgp-card--dark .rgp-card-title { color: #fff; }
+  .rgp-card--dark .rgp-card-text { color: rgba(255,255,255,0.78); }
+  .rgp-card-num { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #7A8294; margin-bottom: 8px; }
+  .rgp-card-title { font-size: 17px; font-weight: 600; color: #0E1726; margin: 0 0 8px; }
+  .rgp-card-text { font-size: 14px; line-height: 1.55; color: #2C3340; }
+
+  /* Timeline */
+  .rgp-timeline { margin-top: 32px; }
+  .rgp-tl-row { display: grid; grid-template-columns: 88px 1fr; gap: 24px; padding: 16px 0; border-top: 1px solid #E1E4E9; }
+  .rgp-tl-row:last-child { border-bottom: 1px solid #E1E4E9; }
+  .rgp-tl-time { font-size: 15px; font-weight: 600; color: #0E375E; font-variant-numeric: tabular-nums; }
+  .rgp-tl-title { font-size: 15px; font-weight: 600; color: #0E1726; margin-bottom: 4px; }
+  .rgp-tl-text { font-size: 14px; color: #5A6373; }
+
+  /* Two columns */
+  .rgp-two { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-top: 32px; }
+  @media (max-width: 900px) { .rgp-two { grid-template-columns: 1fr; gap: 32px; } }
+  .rgp-stat { display: flex; align-items: baseline; gap: 12px; margin: 16px 0; }
+  .rgp-stat-num { font-size: 36px; font-weight: 600; color: #0E375E; line-height: 1; }
+  .rgp-stat-label { font-size: 13px; color: #5A6373; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* Included / Optional list */
+  .rgp-list { list-style: none; padding: 0; margin: 16px 0 0; }
+  .rgp-list li { padding: 12px 0 12px 28px; position: relative; font-size: 15px; color: #2C3340; border-top: 1px solid #E1E4E9; }
+  .rgp-list li:last-child { border-bottom: 1px solid #E1E4E9; }
+  .rgp-list li::before { content: ""; position: absolute; left: 0; top: 50%; width: 14px; height: 1px; background: #0E375E; }
+  .rgp-list--optional li::before { background: #7A8294; height: 1px; width: 8px; left: 4px; }
+
+  /* Packages */
+  .rgp-pkg { background: #fff; border: 1px solid #E1E4E9; border-radius: 4px; padding: 32px 28px; display: flex; flex-direction: column; height: 100%; }
+  .rgp-pkg--featured { background: #0E375E; color: #fff; border-color: #0E375E; }
+  .rgp-pkg--featured .rgp-pkg-name { color: #fff; }
+  .rgp-pkg--featured .rgp-pkg-size { color: rgba(255,255,255,0.7); }
+  .rgp-pkg--featured .rgp-pkg-features li { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.15); }
+  .rgp-pkg--featured .rgp-pkg-price { color: rgba(255,255,255,0.95); }
+  .rgp-pkg-name { font-size: 20px; font-weight: 600; color: #0E1726; margin: 0 0 4px; }
+  .rgp-pkg-size { font-size: 13px; color: #7A8294; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px; }
+  .rgp-pkg-features { list-style: none; padding: 0; margin: 0 0 24px; flex: 1; }
+  .rgp-pkg-features li { padding: 10px 0; font-size: 14px; line-height: 1.5; color: #2C3340; border-top: 1px solid #E1E4E9; }
+  .rgp-pkg-features li:first-child { border-top: none; }
+  .rgp-pkg-price { font-size: 14px; font-weight: 600; color: #0E375E; padding-top: 16px; border-top: 1px solid #E1E4E9; }
+  .rgp-pkg--featured .rgp-pkg-price { border-top-color: rgba(255,255,255,0.2); }
+
+  /* Final CTA */
+  .rgp-final { background: #0E1726; color: #fff; padding: 80px 24px; }
+  .rgp-final-inner { max-width: 980px; margin: 0 auto; text-align: center; }
+  .rgp-final .rgp-h2 { color: #fff; font-size: 36px; }
+  .rgp-final .rgp-lead { color: rgba(255,255,255,0.78); margin-left: auto; margin-right: auto; }
+  .rgp-final .rgp-btns { justify-content: center; }
+  .rgp-contacts { display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; margin-top: 40px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.15); }
+  .rgp-contact { font-size: 14px; color: rgba(255,255,255,0.78); }
+  .rgp-contact a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 1px; }
+  .rgp-contact a:hover { border-color: #fff; }
+  .rgp-contact-label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(255,255,255,0.5); margin-bottom: 6px; }
+
+  /* Note */
+  .rgp-note { font-size: 13px; color: #5A6373; margin-top: 24px; font-style: italic; }
+</style>
+
+<!-- HERO -->
+<section class="rgp-hero">
+  <div class="rgp-hero-inner">
+    <p class="rgp-eyebrow" data-i18n="hero_eyebrow">Корпоративная регата · Баку · Каспийское море</p>
+    <h1 class="rgp-h1" data-i18n="hero_title">Тимбилдинг под парусом. Команда за один день.</h1>
+    <p class="rgp-lead" data-i18n="hero_lead">Корпоративная регата в Бакинской бухте. Покажем на практике, что коллектив — это ещё не команда, и поможем стать ею за один день.</p>
+    <div class="rgp-btns">
+      <a href="#popup:regatta-calc" class="rgp-btn rgp-btn--primary" data-i18n="cta_calc">Рассчитать стоимость</a>
+      <a href="#" class="rgp-btn rgp-btn--ghost" data-rgp-wa data-i18n="cta_wa">Написать в WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section class="rgp-section">
+  <p class="rgp-eyebrow" data-i18n="why_eyebrow">Почему регата</p>
+  <h2 class="rgp-h2" data-i18n="why_title">Старейшая форма соперничества — и идеальный тренажёр для команды.</h2>
+  <p class="rgp-lead" data-i18n="why_lead">5–8 человек на лодке. Наш скипер ведёт яхту и учит команду по ходу гонки. Опыт яхтинга не обязателен — основы расскажем на брифинге за 30 минут. Доступно мужчинам и женщинам на равных.</p>
+  <div class="rgp-grid rgp-grid--4">
+    <div class="rgp-card">
+      <div class="rgp-card-num">01</div>
+      <div class="rgp-card-title" data-i18n="why_1_t">Работа в команде</div>
+      <div class="rgp-card-text" data-i18n="why_1_d">Без слаженных действий яхта не идёт. Видно сразу.</div>
+    </div>
+    <div class="rgp-card">
+      <div class="rgp-card-num">02</div>
+      <div class="rgp-card-title" data-i18n="why_2_t">Тактика и стратегия</div>
+      <div class="rgp-card-text" data-i18n="why_2_d">План на гонку строится за минуты и меняется на ходу.</div>
+    </div>
+    <div class="rgp-card">
+      <div class="rgp-card-num">03</div>
+      <div class="rgp-card-title" data-i18n="why_3_t">Обработка информации</div>
+      <div class="rgp-card-text" data-i18n="why_3_d">Ветер, волна, соперники — данных много, время решения коротко.</div>
+    </div>
+    <div class="rgp-card">
+      <div class="rgp-card-num">04</div>
+      <div class="rgp-card-title" data-i18n="why_4_t">Прогнозирование</div>
+      <div class="rgp-card-text" data-i18n="why_4_d">Каждое решение проверяется морем через 5–10 минут.</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHEN / LOCATION -->
+<section class="rgp-section rgp-section--alt">
+  <div class="rgp-inner">
+    <p class="rgp-eyebrow" data-i18n="when_eyebrow">Локация и расписание</p>
+    <h2 class="rgp-h2" data-i18n="when_title">В центре города. Один день без трансферов.</h2>
+    <div class="rgp-two">
+      <div>
+        <p class="rgp-text" data-i18n="when_text">Старт и финиш — в Бакинской бухте, в десяти минутах пешком от станции метро. Никаких выездов за город и долгих переездов. Программа умещается в один рабочий день.</p>
+        <div class="rgp-stat">
+          <span class="rgp-stat-num">10</span>
+          <span class="rgp-stat-label" data-i18n="when_stat1">минут пешком от метро</span>
+        </div>
+        <div class="rgp-stat">
+          <span class="rgp-stat-num">0</span>
+          <span class="rgp-stat-label" data-i18n="when_stat2">трансферов и переездов</span>
+        </div>
+        <div class="rgp-stat">
+          <span class="rgp-stat-num">7</span>
+          <span class="rgp-stat-label" data-i18n="when_stat3">месяцев сезона · апрель–октябрь</span>
+        </div>
+      </div>
+      <div>
+        <div class="rgp-timeline">
+          <div class="rgp-tl-row">
+            <div class="rgp-tl-time">10:30</div>
+            <div>
+              <div class="rgp-tl-title" data-i18n="tl_1_t">Сбор</div>
+              <div class="rgp-tl-text" data-i18n="tl_1_d">Регистрация, кофе, формирование команд.</div>
+            </div>
+          </div>
+          <div class="rgp-tl-row">
+            <div class="rgp-tl-time">11:00</div>
+            <div>
+              <div class="rgp-tl-title" data-i18n="tl_2_t">Брифинг</div>
+              <div class="rgp-tl-text" data-i18n="tl_2_d">Основы паруса, безопасность, спасжилеты.</div>
+            </div>
+          </div>
+          <div class="rgp-tl-row">
+            <div class="rgp-tl-time">11:30</div>
+            <div>
+              <div class="rgp-tl-title" data-i18n="tl_3_t">Тренировка</div>
+              <div class="rgp-tl-text" data-i18n="tl_3_d">Слаживание команд по пути к старту.</div>
+            </div>
+          </div>
+          <div class="rgp-tl-row">
+            <div class="rgp-tl-time">12:00</div>
+            <div>
+              <div class="rgp-tl-title" data-i18n="tl_4_t">Гонка 1</div>
+              <div class="rgp-tl-text" data-i18n="tl_4_d">Дистанция 2–3 морские мили.</div>
+            </div>
+          </div>
+          <div class="rgp-tl-row">
+            <div class="rgp-tl-time">13:00</div>
+            <div>
+              <div class="rgp-tl-title" data-i18n="tl_5_t">Гонки 2 и 3</div>
+              <div class="rgp-tl-text" data-i18n="tl_5_d">С учётом опыта первой.</div>
+            </div>
+          </div>
+          <div class="rgp-tl-row">
+            <div class="rgp-tl-time">15:00</div>
+            <div>
+              <div class="rgp-tl-title" data-i18n="tl_6_t">Церемония</div>
+              <div class="rgp-tl-text" data-i18n="tl_6_d">Награждение, фото, afterparty.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLEET -->
+<section class="rgp-section">
+  <p class="rgp-eyebrow" data-i18n="fleet_eyebrow">Наш флот</p>
+  <h2 class="rgp-h2" data-i18n="fleet_title">Пять яхт в активной программе. Равные по гандикапу ORC.</h2>
+  <p class="rgp-lead" data-i18n="fleet_lead">Результаты пересчитываются по системе ORC — яхты разных классов соревнуются на равных. Побеждает команда, а не лодка.</p>
+  <div class="rgp-grid rgp-grid--3">
+    <div class="rgp-card">
+      <div class="rgp-card-num" data-i18n="fleet_1_n">1 яхта</div>
+      <div class="rgp-card-title">Beneteau 411</div>
+      <div class="rgp-card-text" data-i18n="fleet_1_d">Круизная яхта 12,5 м. До 8 человек на борту.</div>
+    </div>
+    <div class="rgp-card">
+      <div class="rgp-card-num" data-i18n="fleet_2_n">3 яхты</div>
+      <div class="rgp-card-title">Carter 30</div>
+      <div class="rgp-card-text" data-i18n="fleet_2_d">Классические гоночные яхты. До 8 человек на борту.</div>
+    </div>
+    <div class="rgp-card">
+      <div class="rgp-card-num" data-i18n="fleet_3_n">1 яхта</div>
+      <div class="rgp-card-title">MAT 10</div>
+      <div class="rgp-card-text" data-i18n="fleet_3_d">Лёгкая быстрая яхта. До 8 человек на борту.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TURNKEY -->
+<section class="rgp-section rgp-section--alt">
+  <div class="rgp-inner">
+    <p class="rgp-eyebrow" data-i18n="turn_eyebrow">Под ключ</p>
+    <h2 class="rgp-h2" data-i18n="turn_title">Что входит и что — опционально.</h2>
+    <div class="rgp-two">
+      <div>
+        <div class="rgp-card-title" data-i18n="turn_in_title">Входит в стоимость</div>
+        <ul class="rgp-list">
+          <li data-i18n="turn_in_1">Флот яхт под количество участников</li>
+          <li data-i18n="turn_in_2">Шкипер на каждой лодке</li>
+          <li data-i18n="turn_in_3">Спасжилеты, брифинг, спасательный катер</li>
+          <li data-i18n="turn_in_4">Дипломы об участии всем гостям</li>
+        </ul>
+      </div>
+      <div>
+        <div class="rgp-card-title" data-i18n="turn_opt_title">Опционально</div>
+        <ul class="rgp-list rgp-list--optional">
+          <li data-i18n="turn_opt_1">Кейтеринг — завтрак, обед, закуски</li>
+          <li data-i18n="turn_opt_2">Профессиональное фото и видео</li>
+          <li data-i18n="turn_opt_3">Кубки и медали для победителей</li>
+          <li data-i18n="turn_opt_4">Брендирование под вашу компанию</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PACKAGES (без цен) -->
+<section class="rgp-section">
+  <p class="rgp-eyebrow" data-i18n="pkg_eyebrow">Стоимость</p>
+  <h2 class="rgp-h2" data-i18n="pkg_title">Три типовых сценария. Финальный расчёт — под ваш.</h2>
+  <p class="rgp-lead" data-i18n="pkg_lead">Стоимость зависит от количества гостей, формата дня и набора опций. Соберём персональное предложение за 24 часа — или рассчитайте сами в калькуляторе.</p>
+  <div class="rgp-grid rgp-grid--3">
+    <div class="rgp-pkg">
+      <div class="rgp-pkg-name" data-i18n="pkg_1_name">Базовый</div>
+      <div class="rgp-pkg-size" data-i18n="pkg_1_size">До 32 гостей</div>
+      <ul class="rgp-pkg-features">
+        <li data-i18n="pkg_1_f1">1 регата</li>
+        <li data-i18n="pkg_1_f2">Полдня</li>
+        <li data-i18n="pkg_1_f3">Базовая программа</li>
+      </ul>
+      <div class="rgp-pkg-price" data-i18n="pkg_price">По запросу</div>
+    </div>
+    <div class="rgp-pkg rgp-pkg--featured">
+      <div class="rgp-pkg-name" data-i18n="pkg_2_name">Стандарт</div>
+      <div class="rgp-pkg-size" data-i18n="pkg_2_size">До 64 гостей</div>
+      <ul class="rgp-pkg-features">
+        <li data-i18n="pkg_2_f1">2 регаты</li>
+        <li data-i18n="pkg_2_f2">Ротации команд</li>
+        <li data-i18n="pkg_2_f3">Полный день</li>
+      </ul>
+      <div class="rgp-pkg-price" data-i18n="pkg_price">По запросу</div>
+    </div>
+    <div class="rgp-pkg">
+      <div class="rgp-pkg-name" data-i18n="pkg_3_name">Конференция</div>
+      <div class="rgp-pkg-size" data-i18n="pkg_3_size">Более 64 гостей</div>
+      <ul class="rgp-pkg-features">
+        <li data-i18n="pkg_3_f1">3–4 ротации</li>
+        <li data-i18n="pkg_3_f2">1–2 дня</li>
+        <li data-i18n="pkg_3_f3">Кейтеринг, afterparty</li>
+      </ul>
+      <div class="rgp-pkg-price" data-i18n="pkg_price">По запросу</div>
+    </div>
+  </div>
+  <p class="rgp-note" data-i18n="pkg_note">Расширения — брендинг, фото- и видеосъёмка, кейтеринг — считаем отдельно. Персональный расчёт собираем за 24 часа.</p>
+</section>
+
+<!-- FINAL CTA -->
+<section class="rgp-final">
+  <div class="rgp-final-inner">
+    <p class="rgp-eyebrow" style="color:rgba(255,255,255,0.6)" data-i18n="final_eyebrow">Следующий шаг</p>
+    <h2 class="rgp-h2" data-i18n="final_title">Соберём персональное предложение за 24 часа.</h2>
+    <p class="rgp-lead" data-i18n="final_lead">Расскажите про команду и формат — пришлём смету, варианты дат и план дня.</p>
+    <div class="rgp-btns">
+      <a href="#popup:regatta-calc" class="rgp-btn rgp-btn--primary" data-i18n="cta_calc">Рассчитать стоимость</a>
+      <a href="#popup:regatta-form" class="rgp-btn rgp-btn--ghost" data-i18n="cta_form">Оставить заявку</a>
+      <a href="#" class="rgp-btn rgp-btn--ghost" data-rgp-wa data-i18n="cta_wa">Написать в WhatsApp</a>
+    </div>
+    <div class="rgp-contacts">
+      <div class="rgp-contact">
+        <span class="rgp-contact-label" data-i18n="ct_phone">Телефон · WhatsApp</span>
+        <a href="tel:+994502350235">+994 50 235 02 35</a>
+      </div>
+      <div class="rgp-contact">
+        <span class="rgp-contact-label">Email</span>
+        <a href="mailto:corp@yacht.az">corp@yacht.az</a>
+      </div>
+      <div class="rgp-contact">
+        <span class="rgp-contact-label">Instagram</span>
+        <a href="https://instagram.com/yachtaz" target="_blank" rel="noopener">@yachtaz</a>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<script>
+(function () {
+  var T = {
+    ru: {
+      hero_eyebrow: 'Корпоративная регата · Баку · Каспийское море',
+      hero_title: 'Тимбилдинг под парусом. Команда за один день.',
+      hero_lead: 'Корпоративная регата в Бакинской бухте. Покажем на практике, что коллектив — это ещё не команда, и поможем стать ею за один день.',
+      cta_calc: 'Рассчитать стоимость',
+      cta_form: 'Оставить заявку',
+      cta_wa: 'Написать в WhatsApp',
+      why_eyebrow: 'Почему регата',
+      why_title: 'Старейшая форма соперничества — и идеальный тренажёр для команды.',
+      why_lead: '5–8 человек на лодке. Наш шкипер ведёт яхту и учит команду по ходу гонки. Опыт яхтинга не обязателен — основы расскажем на брифинге за 30 минут. Доступно мужчинам и женщинам на равных.',
+      why_1_t: 'Работа в команде',
+      why_1_d: 'Без слаженных действий яхта не идёт. Видно сразу.',
+      why_2_t: 'Тактика и стратегия',
+      why_2_d: 'План на гонку строится за минуты и меняется на ходу.',
+      why_3_t: 'Обработка информации',
+      why_3_d: 'Ветер, волна, соперники — данных много, время решения коротко.',
+      why_4_t: 'Прогнозирование',
+      why_4_d: 'Каждое решение проверяется морем через 5–10 минут.',
+      when_eyebrow: 'Локация и расписание',
+      when_title: 'В центре города. Один день без трансферов.',
+      when_text: 'Старт и финиш — в Бакинской бухте, в десяти минутах пешком от станции метро. Никаких выездов за город и долгих переездов. Программа умещается в один рабочий день.',
+      when_stat1: 'минут пешком от метро',
+      when_stat2: 'трансферов и переездов',
+      when_stat3: 'месяцев сезона · апрель–октябрь',
+      tl_1_t: 'Сбор', tl_1_d: 'Регистрация, кофе, формирование команд.',
+      tl_2_t: 'Брифинг', tl_2_d: 'Основы паруса, безопасность, спасжилеты.',
+      tl_3_t: 'Тренировка', tl_3_d: 'Слаживание команд по пути к старту.',
+      tl_4_t: 'Гонка 1', tl_4_d: 'Дистанция 2–3 морские мили.',
+      tl_5_t: 'Гонки 2 и 3', tl_5_d: 'С учётом опыта первой.',
+      tl_6_t: 'Церемония', tl_6_d: 'Награждение, фото, afterparty.',
+      fleet_eyebrow: 'Наш флот',
+      fleet_title: 'Пять яхт в активной программе. Равные по гандикапу ORC.',
+      fleet_lead: 'Результаты пересчитываются по системе ORC — яхты разных классов соревнуются на равных. Побеждает команда, а не лодка.',
+      fleet_1_n: '1 яхта', fleet_1_d: 'Круизная яхта 12,5 м. До 8 человек на борту.',
+      fleet_2_n: '3 яхты', fleet_2_d: 'Классические гоночные яхты. До 8 человек на борту.',
+      fleet_3_n: '1 яхта', fleet_3_d: 'Лёгкая быстрая яхта. До 8 человек на борту.',
+      turn_eyebrow: 'Под ключ',
+      turn_title: 'Что входит и что — опционально.',
+      turn_in_title: 'Входит в стоимость',
+      turn_in_1: 'Флот яхт под количество участников',
+      turn_in_2: 'Шкипер на каждой лодке',
+      turn_in_3: 'Спасжилеты, брифинг, спасательный катер',
+      turn_in_4: 'Дипломы об участии всем гостям',
+      turn_opt_title: 'Опционально',
+      turn_opt_1: 'Кейтеринг — завтрак, обед, закуски',
+      turn_opt_2: 'Профессиональное фото и видео',
+      turn_opt_3: 'Кубки и медали для победителей',
+      turn_opt_4: 'Брендирование под вашу компанию',
+      pkg_eyebrow: 'Стоимость',
+      pkg_title: 'Три типовых сценария. Финальный расчёт — под ваш.',
+      pkg_lead: 'Стоимость зависит от количества гостей, формата дня и набора опций. Соберём персональное предложение за 24 часа — или рассчитайте сами в калькуляторе.',
+      pkg_1_name: 'Базовый', pkg_1_size: 'До 32 гостей',
+      pkg_1_f1: '1 регата', pkg_1_f2: 'Полдня', pkg_1_f3: 'Базовая программа',
+      pkg_2_name: 'Стандарт', pkg_2_size: 'До 64 гостей',
+      pkg_2_f1: '2 регаты', pkg_2_f2: 'Ротации команд', pkg_2_f3: 'Полный день',
+      pkg_3_name: 'Конференция', pkg_3_size: 'Более 64 гостей',
+      pkg_3_f1: '3–4 ротации', pkg_3_f2: '1–2 дня', pkg_3_f3: 'Кейтеринг, afterparty',
+      pkg_price: 'По запросу',
+      pkg_note: 'Расширения — брендинг, фото- и видеосъёмка, кейтеринг — считаем отдельно. Персональный расчёт собираем за 24 часа.',
+      final_eyebrow: 'Следующий шаг',
+      final_title: 'Соберём персональное предложение за 24 часа.',
+      final_lead: 'Расскажите про команду и формат — пришлём смету, варианты дат и план дня.',
+      ct_phone: 'Телефон · WhatsApp',
+      wa_text: 'Здравствуйте! Интересует корпоративная регата для команды. Расскажите, пожалуйста, подробнее.'
+    },
+    en: {
+      hero_eyebrow: 'Corporate regatta · Baku · Caspian Sea',
+      hero_title: 'Teambuilding under sail. A team in a single day.',
+      hero_lead: 'Corporate regatta in Baku Bay. We will show in practice that a group is not yet a team — and help yours become one in a day.',
+      cta_calc: 'Calculate cost',
+      cta_form: 'Submit request',
+      cta_wa: 'Message on WhatsApp',
+      why_eyebrow: 'Why a regatta',
+      why_title: 'The oldest form of competition — and a perfect drill ground for a team.',
+      why_lead: '5–8 people per boat. Our skipper runs the yacht and coaches the crew during the race. No sailing experience required — the basics are covered in a 30-minute briefing. Open to men and women on equal terms.',
+      why_1_t: 'Teamwork', why_1_d: 'Without coordinated action the yacht does not move. Visible instantly.',
+      why_2_t: 'Tactics and strategy', why_2_d: 'A race plan is built in minutes and changes on the fly.',
+      why_3_t: 'Information processing', why_3_d: 'Wind, waves, rivals — lots of input, little time to decide.',
+      why_4_t: 'Forecasting', why_4_d: 'Every decision is tested by the sea within 5–10 minutes.',
+      when_eyebrow: 'Location and schedule',
+      when_title: 'In the city centre. One day, no transfers.',
+      when_text: 'Start and finish in Baku Bay, ten minutes on foot from the metro. No out-of-town trips, no long transfers. The whole programme fits into a single workday.',
+      when_stat1: 'minutes on foot from metro',
+      when_stat2: 'transfers and detours',
+      when_stat3: 'months of season · April–October',
+      tl_1_t: 'Arrival', tl_1_d: 'Registration, coffee, team line-up.',
+      tl_2_t: 'Briefing', tl_2_d: 'Sailing basics, safety, life jackets.',
+      tl_3_t: 'Training', tl_3_d: 'Crew warm-up on the way to the start line.',
+      tl_4_t: 'Race 1', tl_4_d: 'Distance: 2–3 nautical miles.',
+      tl_5_t: 'Races 2 and 3', tl_5_d: 'With lessons from the first race applied.',
+      tl_6_t: 'Ceremony', tl_6_d: 'Awards, photos, afterparty.',
+      fleet_eyebrow: 'Our fleet',
+      fleet_title: 'Five yachts in the active programme. Equalised by ORC handicap.',
+      fleet_lead: 'Results are recalculated using the ORC handicap system — yachts of different classes compete on equal terms. The crew wins, not the boat.',
+      fleet_1_n: '1 yacht', fleet_1_d: 'Cruising yacht, 12.5 m. Up to 8 people on board.',
+      fleet_2_n: '3 yachts', fleet_2_d: 'Classic racing yachts. Up to 8 people on board.',
+      fleet_3_n: '1 yacht', fleet_3_d: 'Light, fast yacht. Up to 8 people on board.',
+      turn_eyebrow: 'Turnkey',
+      turn_title: 'What is included — and what is optional.',
+      turn_in_title: 'Included',
+      turn_in_1: 'Fleet sized to the number of participants',
+      turn_in_2: 'A skipper on every yacht',
+      turn_in_3: 'Life jackets, briefing, rescue boat',
+      turn_in_4: 'Participation diplomas for all guests',
+      turn_opt_title: 'Optional',
+      turn_opt_1: 'Catering — breakfast, lunch, snacks',
+      turn_opt_2: 'Professional photo and video',
+      turn_opt_3: 'Cups and medals for the winners',
+      turn_opt_4: 'Branding for your company',
+      pkg_eyebrow: 'Pricing',
+      pkg_title: 'Three typical scenarios. The final estimate is yours.',
+      pkg_lead: 'Cost depends on the number of guests, the format of the day, and the options selected. We build a personal proposal within 24 hours — or estimate it yourself in the calculator.',
+      pkg_1_name: 'Basic', pkg_1_size: 'Up to 32 guests',
+      pkg_1_f1: '1 race', pkg_1_f2: 'Half-day', pkg_1_f3: 'Basic programme',
+      pkg_2_name: 'Standard', pkg_2_size: 'Up to 64 guests',
+      pkg_2_f1: '2 races', pkg_2_f2: 'Crew rotations', pkg_2_f3: 'Full day',
+      pkg_3_name: 'Conference', pkg_3_size: 'More than 64 guests',
+      pkg_3_f1: '3–4 rotations', pkg_3_f2: '1–2 days', pkg_3_f3: 'Catering, afterparty',
+      pkg_price: 'On request',
+      pkg_note: 'Extras — branding, photo and video, catering — are quoted separately. Personal estimate is delivered within 24 hours.',
+      final_eyebrow: 'Next step',
+      final_title: 'Personal proposal within 24 hours.',
+      final_lead: 'Tell us about your team and the format — we will send a quote, suggested dates and the day plan.',
+      ct_phone: 'Phone · WhatsApp',
+      wa_text: 'Hello! We are interested in a corporate regatta for our team. Could you share more details?'
+    },
+    az: {
+      hero_eyebrow: 'Korporativ reqata · Bakı · Xəzər dənizi',
+      hero_title: 'Yelkən altında timbildinq. Bir gündə komanda.',
+      hero_lead: 'Bakı buxtasında korporativ reqata. Kollektivin hələ komanda olmadığını praktikada göstərəcəyik — və bir gündə həqiqi komandaya çevirməyə kömək edəcəyik.',
+      cta_calc: 'Qiyməti hesabla',
+      cta_form: 'Sorğu göndər',
+      cta_wa: 'WhatsApp-da yazın',
+      why_eyebrow: 'Niyə reqata',
+      why_title: 'Rəqabətin ən qədim forması — və komanda üçün ideal məşq meydanı.',
+      why_lead: 'Hər yaxtada 5–8 nəfər. Bizim şkiperimiz yaxtanı idarə edir və yarış zamanı komandaya öyrədir. Yelkənçilik təcrübəsi vacib deyil — əsasları 30 dəqiqəlik brifinqdə danışırıq. Kişilər və qadınlar bərabər şərtlərlə iştirak edir.',
+      why_1_t: 'Komanda işi', why_1_d: 'Əlaqəli hərəkətlər olmadan yaxta getmir. Dərhal görünür.',
+      why_2_t: 'Taktika və strategiya', why_2_d: 'Yarış planı dəqiqələrdə qurulur və yolda dəyişir.',
+      why_3_t: 'Məlumatın işlənməsi', why_3_d: 'Külək, dalğa, rəqiblər — çox məlumat, az qərar vaxtı.',
+      why_4_t: 'Proqnozlaşdırma', why_4_d: 'Hər qərar 5–10 dəqiqə içində dəniz tərəfindən yoxlanır.',
+      when_eyebrow: 'Yer və cədvəl',
+      when_title: 'Şəhərin mərkəzində. Transfer olmadan bir gün.',
+      when_text: 'Start və finiş — Bakı buxtasında, metrodan on dəqiqə piyada məsafədə. Şəhərdənkənar gediş-gəliş yoxdur. Bütün proqram bir iş gününə yerləşir.',
+      when_stat1: 'dəqiqə metrodan piyada',
+      when_stat2: 'transfer və köçürmə',
+      when_stat3: 'aylıq sezon · aprel–oktyabr',
+      tl_1_t: 'Toplanış', tl_1_d: 'Qeydiyyat, qəhvə, komandaların formalaşdırılması.',
+      tl_2_t: 'Brifinq', tl_2_d: 'Yelkənin əsasları, təhlükəsizlik, can yelekləri.',
+      tl_3_t: 'Məşq', tl_3_d: 'Start xəttinə qədər komandaların yığılması.',
+      tl_4_t: 'Yarış 1', tl_4_d: 'Məsafə: 2–3 dəniz mili.',
+      tl_5_t: 'Yarış 2 və 3', tl_5_d: 'Birinci yarışın təcrübəsi nəzərə alınır.',
+      tl_6_t: 'Mərasim', tl_6_d: 'Mükafatlandırma, foto, afterparty.',
+      fleet_eyebrow: 'Bizim donanma',
+      fleet_title: 'Aktiv proqramda beş yaxta. ORC handikapı ilə bərabərləşdirilmiş.',
+      fleet_lead: 'Nəticələr ORC handikap sistemi ilə hesablanır — müxtəlif siniflərdən yaxtalar bərabər şərtlərlə yarışır. Qalib komanda olur, qayıq deyil.',
+      fleet_1_n: '1 yaxta', fleet_1_d: 'Kruiz yaxtası, 12,5 m. Borda 8 nəfərə qədər.',
+      fleet_2_n: '3 yaxta', fleet_2_d: 'Klassik yarış yaxtaları. Borda 8 nəfərə qədər.',
+      fleet_3_n: '1 yaxta', fleet_3_d: 'Yüngül və sürətli yaxta. Borda 8 nəfərə qədər.',
+      turn_eyebrow: 'Açar təslimi',
+      turn_title: 'Qiymətə daxildir və əlavə nədir.',
+      turn_in_title: 'Qiymətə daxildir',
+      turn_in_1: 'İştirakçı sayına uyğun yaxta donanması',
+      turn_in_2: 'Hər yaxtada şkiper',
+      turn_in_3: 'Can yelekləri, brifinq, xilasetmə qayığı',
+      turn_in_4: 'Bütün qonaqlara iştirak diplomu',
+      turn_opt_title: 'Əlavə',
+      turn_opt_1: 'Keytrinq — səhər yeməyi, nahar, qəlyanaltılar',
+      turn_opt_2: 'Peşəkar foto və video',
+      turn_opt_3: 'Qaliblər üçün kuboklar və medallar',
+      turn_opt_4: 'Şirkətiniz üçün brendinq',
+      pkg_eyebrow: 'Dəyər',
+      pkg_title: 'Üç tipik ssenari. Yekun hesablama — sizin üçün.',
+      pkg_lead: 'Qiymət qonaqların sayından, günün formatından və seçilən opsiyalardan asılıdır. Şəxsi təklifi 24 saat ərzində hazırlayırıq — və ya kalkulyatorda özünüz hesablayın.',
+      pkg_1_name: 'Baza', pkg_1_size: '32 qonağa qədər',
+      pkg_1_f1: '1 yarış', pkg_1_f2: 'Yarım gün', pkg_1_f3: 'Baza proqramı',
+      pkg_2_name: 'Standart', pkg_2_size: '64 qonağa qədər',
+      pkg_2_f1: '2 yarış', pkg_2_f2: 'Komanda rotasiyası', pkg_2_f3: 'Tam gün',
+      pkg_3_name: 'Konfrans', pkg_3_size: '64-dən çox qonaq',
+      pkg_3_f1: '3–4 rotasiya', pkg_3_f2: '1–2 gün', pkg_3_f3: 'Keytrinq, afterparty',
+      pkg_price: 'Sorğu əsasında',
+      pkg_note: 'Əlavələr — brendinq, foto- və videoçəkiliş, keytrinq — ayrıca hesablanır. Şəxsi hesablama 24 saat ərzində hazırlanır.',
+      final_eyebrow: 'Növbəti addım',
+      final_title: 'Şəxsi təklifi 24 saat ərzində toplayacağıq.',
+      final_lead: 'Komanda və format barədə danışın — qiymət, mümkün tarixlər və günün planını göndərəcəyik.',
+      ct_phone: 'Telefon · WhatsApp',
+      wa_text: 'Salam! Komandamız üçün korporativ reqata ilə maraqlanırıq. Detallar verə bilərsinizmi?'
+    }
+  };
+
+  var path = window.location.pathname;
+  var lang = /\/en(\/|$)/.test(path) ? 'en'
+           : /\/az(\/|$)/.test(path) ? 'az' : 'ru';
+  var t = T[lang];
+
+  var root = document.getElementById('rgp-root');
+  if (!root) return;
+
+  root.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var key = el.getAttribute('data-i18n');
+    if (t[key]) el.textContent = t[key];
+  });
+
+  var waText = encodeURIComponent(t.wa_text);
+  var waHref = 'https://wa.me/994502350235?text=' + waText;
+  root.querySelectorAll('[data-rgp-wa]').forEach(function (a) {
+    a.href = waHref;
+    a.target = '_blank';
+    a.rel = 'noopener';
+  });
+})();
+</script>
