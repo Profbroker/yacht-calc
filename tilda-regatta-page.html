@@ -76,6 +76,13 @@
   .rgp-card-title { font-size: 17px; font-weight: 600; color: #0E1726; margin: 0 0 8px; }
   .rgp-card-text { font-size: 14px; line-height: 1.55; color: #2C3340; }
 
+  /* Карточка с фото сверху (используется в Fleet) */
+  .rgp-card--with-photo { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+  .rgp-card-img { aspect-ratio: 4 / 3; width: 100%; background-size: cover; background-position: center; border-bottom: 1px solid #E1E4E9; filter: saturate(0.65) sepia(0.18) brightness(0.95); }
+  .rgp-card--with-photo .rgp-card-body { padding: 24px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .rgp-card--with-photo .rgp-card-num { margin-bottom: 0; }
+  .rgp-card--with-photo .rgp-card-title { margin: 0; }
+
   /* Timeline */
   .rgp-timeline { margin-top: 32px; }
   .rgp-tl-row { display: grid; grid-template-columns: 88px 1fr; gap: 24px; padding: 16px 0; border-top: 1px solid #E1E4E9; }
@@ -248,10 +255,13 @@
   <h2 class="rgp-h2" data-i18n="fleet_title">Пять яхт в активной программе. Равные по гандикапу ORC.</h2>
   <p class="rgp-lead" data-i18n="fleet_lead">Результаты пересчитываются по системе ORC — яхты разных классов соревнуются на равных. Побеждает команда, а не лодка.</p>
   <div class="rgp-grid rgp-grid--3">
-    <div class="rgp-card">
-      <div class="rgp-card-num" data-i18n="fleet_1_n">1 яхта</div>
-      <div class="rgp-card-title">Beneteau 411</div>
-      <div class="rgp-card-text" data-i18n="fleet_1_d">Круизная яхта 12,5 м. До 8 человек на борту.</div>
+    <div class="rgp-card rgp-card--with-photo">
+      <div class="rgp-card-img" role="img" aria-label="Beneteau 411" style="background-image: url('https://optim.tildacdn.com/tild3065-3661-4137-a462-623135666366/-/format/webp/imgi_19_header-ocean.webp');"></div>
+      <div class="rgp-card-body">
+        <div class="rgp-card-num" data-i18n="fleet_1_n">1 яхта</div>
+        <div class="rgp-card-title">Beneteau 411</div>
+        <div class="rgp-card-text" data-i18n="fleet_1_d">Круизная яхта 12,5 м. До 8 человек на борту.</div>
+      </div>
     </div>
     <div class="rgp-card">
       <div class="rgp-card-num" data-i18n="fleet_2_n">3 яхты</div>
