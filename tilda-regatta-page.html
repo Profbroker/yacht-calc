@@ -34,13 +34,18 @@
   .rgp-text--muted { color: #5A6373; font-size: 14px; }
 
   /* HERO */
-  .rgp-hero { background: linear-gradient(180deg, #0E375E 0%, #0E1726 100%); color: #fff; }
-  .rgp-hero-inner { max-width: 1180px; margin: 0 auto; padding: 96px 24px 80px; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; align-items: center; }
-  .rgp-hero-text { min-width: 0; }
-  .rgp-hero-photo { aspect-ratio: 4 / 3; background-size: cover; background-position: center; border-radius: 4px; box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
+  .rgp-hero {
+    background:
+      linear-gradient(90deg, rgba(14,23,38,0.92) 0%, rgba(14,23,38,0.88) 38%, rgba(14,55,94,0.55) 62%, rgba(14,55,94,0.15) 85%, rgba(14,55,94,0.05) 100%),
+      url('https://optim.tildacdn.com/tild6461-3862-4339-a134-643032396536/-/format/webp/imgi_99_photo_2020-1.jpg.webp') center center / cover no-repeat,
+      linear-gradient(180deg, #0E375E 0%, #0E1726 100%);
+    color: #fff;
+  }
+  .rgp-hero-inner { max-width: 1180px; margin: 0 auto; padding: 96px 24px 80px; }
   .rgp-hero .rgp-eyebrow { color: rgba(255,255,255,0.62); }
-  .rgp-hero .rgp-h1 { color: #fff; font-size: 52px; max-width: 880px; }
-  .rgp-hero .rgp-lead { color: rgba(255,255,255,0.85); font-size: 19px; max-width: 740px; }
+  .rgp-hero .rgp-h1 { color: #fff; font-size: 52px; max-width: 620px; text-shadow: 0 2px 16px rgba(0,0,0,0.35); }
+  .rgp-hero .rgp-lead { color: rgba(255,255,255,0.92); font-size: 19px; max-width: 560px; text-shadow: 0 1px 8px rgba(0,0,0,0.4); }
+  .rgp-hero .rgp-btns { margin-top: 12px; }
 
   /* Buttons */
   .rgp-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
@@ -62,9 +67,15 @@
   @media (max-width: 900px) {
     .rgp-grid--4, .rgp-grid--3, .rgp-grid--2 { grid-template-columns: 1fr; }
     .rgp-section { padding: 56px 20px; }
-    .rgp-hero-inner { padding: 72px 20px 56px; grid-template-columns: 1fr; gap: 32px; }
-    .rgp-hero-photo { aspect-ratio: 16 / 10; order: -1; }
-    .rgp-hero .rgp-h1 { font-size: 36px; }
+    .rgp-hero {
+      background:
+        linear-gradient(180deg, rgba(14,23,38,0.55) 0%, rgba(14,23,38,0.85) 60%, rgba(14,23,38,0.95) 100%),
+        url('https://optim.tildacdn.com/tild6461-3862-4339-a134-643032396536/-/format/webp/imgi_99_photo_2020-1.jpg.webp') center top / cover no-repeat,
+        linear-gradient(180deg, #0E375E 0%, #0E1726 100%);
+    }
+    .rgp-hero-inner { padding: 72px 20px 56px; }
+    .rgp-hero .rgp-h1 { font-size: 36px; max-width: 100%; }
+    .rgp-hero .rgp-lead { max-width: 100%; }
     .rgp-h1 { font-size: 32px; }
     .rgp-h2 { font-size: 26px; }
     .rgp-lead { font-size: 16px; }
@@ -142,16 +153,13 @@
 <!-- HERO -->
 <section class="rgp-hero">
   <div class="rgp-hero-inner">
-    <div class="rgp-hero-text">
-      <p class="rgp-eyebrow" data-i18n="hero_eyebrow">Корпоративная регата · Баку · Каспийское море</p>
-      <h1 class="rgp-h1" data-i18n="hero_title">Тимбилдинг под парусом. Команда за один день.</h1>
-      <p class="rgp-lead" data-i18n="hero_lead">Корпоративная регата в Бакинской бухте. Покажем на практике, что коллектив — это ещё не команда, и поможем стать ею за один день.</p>
-      <div class="rgp-btns">
-        <a href="#popup:regatta-calc" class="rgp-btn rgp-btn--primary" data-i18n="cta_calc">Рассчитать стоимость</a>
-        <a href="#" class="rgp-btn rgp-btn--ghost" data-rgp-wa data-i18n="cta_wa">Написать в WhatsApp</a>
-      </div>
+    <p class="rgp-eyebrow" data-i18n="hero_eyebrow">Корпоративная регата · Баку · Каспийское море</p>
+    <h1 class="rgp-h1" data-i18n="hero_title">Тимбилдинг под парусом. Команда за один день.</h1>
+    <p class="rgp-lead" data-i18n="hero_lead">Корпоративная регата в Бакинской бухте. Покажем на практике, что коллектив — это ещё не команда, и поможем стать ею за один день.</p>
+    <div class="rgp-btns">
+      <a href="#popup:regatta-calc" class="rgp-btn rgp-btn--primary" data-i18n="cta_calc">Рассчитать стоимость</a>
+      <a href="#" class="rgp-btn rgp-btn--ghost" data-rgp-wa data-i18n="cta_wa">Написать в WhatsApp</a>
     </div>
-    <div class="rgp-hero-photo" role="img" aria-label="Корпоративная регата в Бакинской бухте" style="background-image: url('https://optim.tildacdn.com/tild6461-3862-4339-a134-643032396536/-/format/webp/imgi_99_photo_2020-1.jpg.webp');"></div>
   </div>
 </section>
 
