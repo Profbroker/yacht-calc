@@ -35,16 +35,28 @@
 
   /* HERO */
   .rgp-hero {
-    background:
-      linear-gradient(90deg, rgba(14,23,38,0.92) 0%, rgba(14,23,38,0.88) 38%, rgba(14,55,94,0.55) 62%, rgba(14,55,94,0.15) 85%, rgba(14,55,94,0.05) 100%),
-      url('https://optim.tildacdn.com/tild6461-3862-4339-a134-643032396536/-/format/webp/imgi_99_photo_2020-1.jpg.webp') center center / cover no-repeat,
-      linear-gradient(180deg, #0E375E 0%, #0E1726 100%);
+    position: relative;
+    background-color: #0E1726;
+    background-image: url('https://optim.tildacdn.com/tild6461-3862-4339-a134-643032396536/-/format/webp/imgi_99_photo_2020-1.jpg.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: #fff;
+    min-height: 560px;
+    overflow: hidden;
   }
-  .rgp-hero-inner { max-width: 1180px; margin: 0 auto; padding: 96px 24px 80px; }
-  .rgp-hero .rgp-eyebrow { color: rgba(255,255,255,0.62); }
-  .rgp-hero .rgp-h1 { color: #fff; font-size: 52px; max-width: 620px; text-shadow: 0 2px 16px rgba(0,0,0,0.35); }
-  .rgp-hero .rgp-lead { color: rgba(255,255,255,0.92); font-size: 19px; max-width: 560px; text-shadow: 0 1px 8px rgba(0,0,0,0.4); }
+  .rgp-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(14,23,38,0.88) 0%, rgba(14,23,38,0.78) 35%, rgba(14,23,38,0.40) 60%, rgba(14,23,38,0.10) 85%, rgba(14,23,38,0.00) 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .rgp-hero-inner { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: 96px 24px 80px; }
+  .rgp-hero .rgp-eyebrow { color: rgba(255,255,255,0.78); }
+  .rgp-hero .rgp-h1 { color: #fff; font-size: 52px; max-width: 620px; text-shadow: 0 2px 16px rgba(0,0,0,0.45); }
+  .rgp-hero .rgp-lead { color: rgba(255,255,255,0.94); font-size: 19px; max-width: 560px; text-shadow: 0 1px 8px rgba(0,0,0,0.55); }
   .rgp-hero .rgp-btns { margin-top: 12px; }
 
   /* Buttons */
@@ -67,11 +79,9 @@
   @media (max-width: 900px) {
     .rgp-grid--4, .rgp-grid--3, .rgp-grid--2 { grid-template-columns: 1fr; }
     .rgp-section { padding: 56px 20px; }
-    .rgp-hero {
-      background:
-        linear-gradient(180deg, rgba(14,23,38,0.55) 0%, rgba(14,23,38,0.85) 60%, rgba(14,23,38,0.95) 100%),
-        url('https://optim.tildacdn.com/tild6461-3862-4339-a134-643032396536/-/format/webp/imgi_99_photo_2020-1.jpg.webp') center top / cover no-repeat,
-        linear-gradient(180deg, #0E375E 0%, #0E1726 100%);
+    .rgp-hero { background-position: center top; min-height: auto; }
+    .rgp-hero::before {
+      background: linear-gradient(180deg, rgba(14,23,38,0.45) 0%, rgba(14,23,38,0.78) 55%, rgba(14,23,38,0.95) 100%);
     }
     .rgp-hero-inner { padding: 72px 20px 56px; }
     .rgp-hero .rgp-h1 { font-size: 36px; max-width: 100%; }
