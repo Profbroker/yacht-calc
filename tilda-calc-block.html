@@ -249,11 +249,11 @@
   // ── Google Sheets ─────────────────────────────────────────────────────
   // Prices:   gid=0         (id, name, emoji, slug, fee, seasonal, season, h1-h9, discount_start, url_ru, url_en, url_az)
   // Settings: gid=817590634 (key, value) — season_high_start, season_high_end
-  var BASE = 'https://docs.google.com/spreadsheets/d/e/' +
-    '2PACX-1vTA7YQnSpv1mYdQJPz315cy2bL2apUQcPhY-q8i2GJX2wUYd9jAagSehQ1RfA7CYm6dKKntlmvO1AN_' +
-    '/pub?output=csv';
-  var PRICES_URL   = BASE + '&gid=0';
-  var SETTINGS_URL = BASE + '&gid=817590634';
+  // Данные переехали из Google Sheets в git (Profbroker/y-az-publish) через
+  // raw.githubusercontent (авто-сброс кэша при push). Формат CSV тот же, что
+  // был в gid=0 / gid=817590634 — парсер не менялся.
+  var PRICES_URL   = 'https://raw.githubusercontent.com/Profbroker/y-az-publish/main/catalog/data/prices.csv';
+  var SETTINGS_URL = 'https://raw.githubusercontent.com/Profbroker/y-az-publish/main/catalog/data/settings.csv';
 
   // ── Состояние ─────────────────────────────────────────────────────────
   var yachts = [], settings = {}, seasonMap = {};
@@ -376,11 +376,11 @@
   // ── Загрузка данных ───────────────────────────────────────────────────
   function loadData() {
     return Promise.all([
-      fetch(PRICES_URL).then(function (r) {
+      fetch(PRICES_URL + '?_=' + Date.now(), { cache: 'no-store' }).then(function (r) {
         if (!r.ok) throw new Error('prices');
         return r.text();
       }),
-      fetch(SETTINGS_URL).then(function (r) {
+      fetch(SETTINGS_URL + '?_=' + Date.now(), { cache: 'no-store' }).then(function (r) {
         if (!r.ok) throw new Error('settings');
         return r.text();
       })
