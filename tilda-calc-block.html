@@ -107,7 +107,7 @@
   <div class="yc-group">
     <div class="yc-label" id="yc-lbl-hours"></div>
     <div class="yc-slider-row">
-      <input type="range" id="yc-hours" min="1" max="9" value="1"
+      <input type="range" id="yc-hours" min="1" max="8" value="1"
              oninput="ycSetHours(+this.value)">
       <div id="yc-hours-val">1</div>
     </div>
@@ -166,7 +166,10 @@
       no_season:   '🗓 Цена не зависит от сезона',
       rental:      'Аренда {h} ч',
       per_hour:    '{h} ч × {rate}/ч',
-      yacht_link:  'подробнее →'
+      yacht_link:  'подробнее →',
+      by_agreement:      'По согласованию',
+      by_agreement_note: 'Эту длительность уточним лично — напишите нам',
+      book_wa:           'Написать в WhatsApp'
     },
     en: {
       title:       'Calculate price',
@@ -188,7 +191,10 @@
       no_season:   '🗓 Price is not season-dependent',
       rental:      'Rental {h} h',
       per_hour:    '{h} h × {rate}/h',
-      yacht_link:  'details →'
+      yacht_link:  'details →',
+      by_agreement:      'On request',
+      by_agreement_note: 'We’ll arrange this duration personally — message us',
+      book_wa:           'Message on WhatsApp'
     },
     az: {
       title:       'Qiyməti hesabla',
@@ -210,11 +216,15 @@
       no_season:   '🗓 Qiymət mövsümdən asılı deyil',
       rental:      'İcarə {h} saat',
       per_hour:    '{h} saat × {rate}/saat',
-      yacht_link:  'ətraflı →'
+      yacht_link:  'ətraflı →',
+      by_agreement:      'Razılaşma ilə',
+      by_agreement_note: 'Bu müddəti şəxsən dəqiqləşdirək — bizə yazın',
+      book_wa:           'WhatsApp-da yazın'
     }
   };
 
   var T = LANG[lang];
+  var WA_LINK = 'https://wa.me/994502350235';
 
   // Шаблонизатор: tpl('от {n} часов', {n: 5}) → 'от 5 часов'
   function tpl(str, vars) {
@@ -323,9 +333,11 @@
       var rObj = {};
       for (var h = 1; h <= 9; h++) {
         var key = 'h' + h;
-        if (idx[key] !== undefined && cols[idx[key]] && cols[idx[key]].trim()) {
+        // Пустая ячейка / прочерк → ставка НЕ задана (час «по согласованию»).
+        // Число, включая 0 → задано (0 = час бесплатный / day-trip-плато).
+        if (idx[key] !== undefined && cols[idx[key]] != null && cols[idx[key]].trim() !== '') {
           var v = +cols[idx[key]].trim();
-          if (v > 0) rObj[h] = v;
+          if (!isNaN(v) && v >= 0) rObj[h] = v;
         }
       }
       groups[id].rates[season] = rObj;
@@ -415,6 +427,11 @@
     var rSet = yacht.seasonal
       ? (yacht.rates[season] || yacht.rates.high || yacht.rates.any || {})
       : (yacht.rates.any     || yacht.rates.high || {});
+    // «По согласованию»: если в диапазоне 1..hours есть час без заданной ставки
+    // (пустая ячейка / прочерк в CSV) — цену не считаем, отдаём флаг.
+    for (var k = 1; k <= hours; k++) {
+      if (rSet[k] === undefined) return { byAgreement: true, rSet: rSet };
+    }
     var base = rSet[hours] || 0;
     var total = 0;
     for (var i = 1; i <= hours; i++) total += (rSet[i] || 0);
@@ -448,34 +465,53 @@
     document.getElementById('yc-season-wrap').style.display = y.seasonal ? '' : 'none';
     document.getElementById('yc-no-season').style.display   = y.seasonal ? 'none' : 'block';
 
-    // Цена
-    document.getElementById('yc-price-total').textContent = fmt(total, curCurrency);
-    document.getElementById('yc-fee-note').textContent =
-      tpl(T.fee_note, { fee: fmt(y.fee, curCurrency) });
+    var bookBtn = document.getElementById('yc-book-btn');
 
-    // Расшифровка — единая логика для всех яхт (seasonal и не-seasonal)
-    var rows = [];
-    var hoursSum = total - y.fee;
-    rows.push('<div class="yc-bd-row"><span>' +
-      tpl(T.rental, { h: curHours }) +
-      '</span><span>' + fmt(hoursSum, curCurrency) + '</span></div>');
-    // Скидка относительно базовой ставки h1: если бы все часы стоили h1, сколько вышло бы
-    var h1Rate = rSet[1] || base;
-    var noDiscountSum = h1Rate * curHours;
-    if (hoursSum < noDiscountSum) {
-      var saved = noDiscountSum - hoursSum;
-      rows.push('<div class="yc-bd-row discount"><span>' + T.discount +
-        '</span><span>−' + fmt(saved, curCurrency) + '</span></div>');
+    if (res.byAgreement) {
+      // Час «по согласованию» (пустая ячейка/прочерк в CSV) — цену не показываем,
+      // ведём в WhatsApp вместо формы бронирования.
+      document.getElementById('yc-price-total').textContent = T.by_agreement;
+      document.getElementById('yc-fee-note').textContent    = T.by_agreement_note;
+      document.getElementById('yc-breakdown').innerHTML      = '';
+      bookBtn.textContent = T.book_wa;
+      bookBtn.href        = WA_LINK;
+      bookBtn.target      = '_blank';
+      bookBtn.rel         = 'noopener';
+    } else {
+      // Обычный режим — вернуть кнопку брони в исходное состояние
+      bookBtn.textContent = T.book;
+      bookBtn.href        = '#popup:myform';
+      bookBtn.removeAttribute('target');
+
+      // Цена
+      document.getElementById('yc-price-total').textContent = fmt(total, curCurrency);
+      document.getElementById('yc-fee-note').textContent =
+        tpl(T.fee_note, { fee: fmt(y.fee, curCurrency) });
+
+      // Расшифровка — единая логика для всех яхт (seasonal и не-seasonal)
+      var rows = [];
+      var hoursSum = total - y.fee;
+      rows.push('<div class="yc-bd-row"><span>' +
+        tpl(T.rental, { h: curHours }) +
+        '</span><span>' + fmt(hoursSum, curCurrency) + '</span></div>');
+      // Скидка относительно базовой ставки h1: если бы все часы стоили h1, сколько вышло бы
+      var h1Rate = rSet[1] || base;
+      var noDiscountSum = h1Rate * curHours;
+      if (hoursSum < noDiscountSum) {
+        var saved = noDiscountSum - hoursSum;
+        rows.push('<div class="yc-bd-row discount"><span>' + T.discount +
+          '</span><span>−' + fmt(saved, curCurrency) + '</span></div>');
+      }
+      rows.push('<div class="yc-bd-row"><span>' + T.svc_fee +
+        '</span><span>' + fmt(y.fee, curCurrency) + '</span></div>');
+      rows.push('<div class="yc-bd-row total"><span>' + T.total +
+        '</span><span>' + fmt(total, curCurrency) + '</span></div>');
+      document.getElementById('yc-breakdown').innerHTML = rows.join('');
     }
-    rows.push('<div class="yc-bd-row"><span>' + T.svc_fee +
-      '</span><span>' + fmt(y.fee, curCurrency) + '</span></div>');
-    rows.push('<div class="yc-bd-row total"><span>' + T.total +
-      '</span><span>' + fmt(total, curCurrency) + '</span></div>');
-    document.getElementById('yc-breakdown').innerHTML = rows.join('');
 
     // Хинт
     var hintEl = document.getElementById('yc-hint');
-    if (y.discount_start && y.discount_start > 1) {
+    if (!res.byAgreement && y.discount_start && y.discount_start > 1) {
       hintEl.textContent = tpl(T.hint, { n: y.discount_start });
       hintEl.style.display = 'block';
     } else {
