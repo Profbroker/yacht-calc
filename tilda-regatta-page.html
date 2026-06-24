@@ -148,6 +148,14 @@
   .rgp-pkg-price { font-size: 14px; font-weight: 600; color: #0E375E; padding-top: 16px; border-top: 1px solid #E1E4E9; }
   .rgp-pkg--featured .rgp-pkg-price { border-top-color: rgba(255,255,255,0.2); }
 
+  /* Quote divider */
+  .rgp-quote { background: #0E1726; color: #fff; padding: 96px 24px; }
+  .rgp-quote-inner { max-width: 980px; margin: 0 auto; text-align: center; }
+  .rgp-quote-text { font-size: 32px; line-height: 1.3; font-weight: 500; color: #fff; letter-spacing: -0.01em; margin: 0; }
+  .rgp-quote-text::before { content: "« "; color: rgba(255,255,255,0.4); }
+  .rgp-quote-text::after  { content: " »"; color: rgba(255,255,255,0.4); }
+  @media (max-width: 900px) { .rgp-quote { padding: 64px 20px; } .rgp-quote-text { font-size: 22px; line-height: 1.35; } }
+
   /* Final CTA */
   .rgp-final { background: #0E1726; color: #fff; padding: 80px 24px; }
   .rgp-final-inner { max-width: 980px; margin: 0 auto; text-align: center; }
@@ -203,6 +211,13 @@
       <div class="rgp-card-title" data-i18n="why_4_t">Прогнозирование</div>
       <div class="rgp-card-text" data-i18n="why_4_d">Каждое решение проверяется морем через 5–10 минут.</div>
     </div>
+  </div>
+</section>
+
+<!-- QUOTE divider -->
+<section class="rgp-quote">
+  <div class="rgp-quote-inner">
+    <p class="rgp-quote-text" data-i18n="quote_text">Яхтой должна управлять команда, от слаженных действий которой зависит успех.</p>
   </div>
 </section>
 
@@ -315,6 +330,7 @@
   <div class="rgp-inner">
     <p class="rgp-eyebrow" data-i18n="turn_eyebrow">Под ключ</p>
     <h2 class="rgp-h2" data-i18n="turn_title">Что входит и что — опционально.</h2>
+    <p class="rgp-lead" data-i18n="turn_lead">Возьмём все организационные вопросы на себя. Проводим тимбилдинг в Бакинской бухте — старт в центре города, никуда ехать не нужно.</p>
     <div class="rgp-two">
       <div>
         <div class="rgp-card-title" data-i18n="turn_in_title">Входит в стоимость</div>
@@ -443,8 +459,10 @@
       fleet_1_n: '1 яхта', fleet_1_d: 'Круизная яхта 12,5 м. До 8 человек на борту.',
       fleet_2_n: '3 яхты', fleet_2_d: 'Классические гоночные яхты. До 8 человек на борту.',
       fleet_3_n: '1 яхта', fleet_3_d: 'Лёгкая быстрая яхта. До 8 человек на борту.',
+      quote_text: 'Яхтой должна управлять команда, от слаженных действий которой зависит успех.',
       turn_eyebrow: 'Под ключ',
       turn_title: 'Что входит и что — опционально.',
+      turn_lead: 'Возьмём все организационные вопросы на себя. Проводим тимбилдинг в Бакинской бухте — старт в центре города, никуда ехать не нужно.',
       turn_in_title: 'Входит в стоимость',
       turn_in_1: 'Флот яхт под количество участников',
       turn_in_2: 'Шкипер на каждой лодке',
@@ -504,8 +522,10 @@
       fleet_1_n: '1 yacht', fleet_1_d: 'Cruising yacht, 12.5 m. Up to 8 people on board.',
       fleet_2_n: '3 yachts', fleet_2_d: 'Classic racing yachts. Up to 8 people on board.',
       fleet_3_n: '1 yacht', fleet_3_d: 'Light, fast yacht. Up to 8 people on board.',
+      quote_text: 'A yacht must be run by a team whose coordinated actions determine the outcome.',
       turn_eyebrow: 'Turnkey',
       turn_title: 'What is included — and what is optional.',
+      turn_lead: 'We handle all the logistics. The teambuilding takes place in Baku Bay — start is in the city centre, no travel needed.',
       turn_in_title: 'Included',
       turn_in_1: 'Fleet sized to the number of participants',
       turn_in_2: 'A skipper on every yacht',
@@ -565,8 +585,10 @@
       fleet_1_n: '1 yaxta', fleet_1_d: 'Kruiz yaxtası, 12,5 m. Borda 8 nəfərə qədər.',
       fleet_2_n: '3 yaxta', fleet_2_d: 'Klassik yarış yaxtaları. Borda 8 nəfərə qədər.',
       fleet_3_n: '1 yaxta', fleet_3_d: 'Yüngül və sürətli yaxta. Borda 8 nəfərə qədər.',
+      quote_text: 'Yaxtanı komanda idarə etməlidir — uğur onların əlbir hərəkətlərindən asılıdır.',
       turn_eyebrow: 'Açar təslimi',
       turn_title: 'Qiymətə daxildir və əlavə nədir.',
+      turn_lead: 'Bütün təşkilati məsələləri öz üzərimizə götürürük. Timbildinqi Bakı buxtasında keçiririk — start şəhərin mərkəzində, heç yerə getməyə ehtiyac yoxdur.',
       turn_in_title: 'Qiymətə daxildir',
       turn_in_1: 'İştirakçı sayına uyğun yaxta donanması',
       turn_in_2: 'Hər yaxtada şkiper',
