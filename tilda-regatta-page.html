@@ -138,11 +138,11 @@
   .rgp-pkg--featured .rgp-pkg-size { color: rgba(255,255,255,0.7); }
   .rgp-pkg--featured .rgp-pkg-features li { color: rgba(255,255,255,0.85); border-color: rgba(255,255,255,0.15); }
   .rgp-pkg--featured .rgp-pkg-price { color: rgba(255,255,255,0.95); }
-  .rgp-pkg-name { font-size: 20px; font-weight: 600; color: #0E1726; margin: 0 0 4px; }
-  .rgp-pkg-size { font-size: 13px; color: #7A8294; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 24px; }
-  .rgp-pkg-features { list-style: none; padding: 0; margin: 0 0 24px; flex: 1; }
+  .rgp-pkg-name { font-size: 30px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: #0E1726; margin: 0 0 20px; }
+  .rgp-pkg-features { list-style: none; padding: 0; margin: 0 0 20px; flex: 1; }
   .rgp-pkg-features li { padding: 10px 0; font-size: 14px; line-height: 1.5; color: #2C3340; border-top: 1px solid #E1E4E9; }
   .rgp-pkg-features li:first-child { border-top: none; }
+  .rgp-pkg-size { font-size: 12px; color: #7A8294; text-transform: uppercase; letter-spacing: 0.14em; margin: 0 0 8px; }
   .rgp-pkg-price { font-size: 14px; font-weight: 600; color: #0E375E; padding-top: 16px; border-top: 1px solid #E1E4E9; }
   .rgp-pkg--featured .rgp-pkg-price { border-top-color: rgba(255,255,255,0.2); }
 
@@ -343,30 +343,30 @@
   <p class="rgp-lead" data-i18n="pkg_lead">Стоимость зависит от количества гостей, формата дня и набора опций. Соберём персональное предложение за 24 часа — или рассчитайте сами в калькуляторе.</p>
   <div class="rgp-grid rgp-grid--3">
     <div class="rgp-pkg">
-      <div class="rgp-pkg-size" data-i18n="pkg_1_size">Полдня</div>
       <div class="rgp-pkg-name" data-i18n="pkg_1_name">До 32 гостей</div>
       <ul class="rgp-pkg-features">
         <li data-i18n="pkg_1_f1">1 регата</li>
         <li data-i18n="pkg_1_f2">Базовая программа</li>
       </ul>
+      <div class="rgp-pkg-size" data-i18n="pkg_1_size">3–4 часа</div>
       <div class="rgp-pkg-price" data-i18n="pkg_price">По запросу</div>
     </div>
     <div class="rgp-pkg">
-      <div class="rgp-pkg-size" data-i18n="pkg_2_size">Полный день</div>
       <div class="rgp-pkg-name" data-i18n="pkg_2_name">До 64 гостей</div>
       <ul class="rgp-pkg-features">
         <li data-i18n="pkg_2_f1">2 регаты</li>
         <li data-i18n="pkg_2_f2">Ротации команд</li>
       </ul>
+      <div class="rgp-pkg-size" data-i18n="pkg_2_size">6–8 часов</div>
       <div class="rgp-pkg-price" data-i18n="pkg_price">По запросу</div>
     </div>
     <div class="rgp-pkg">
-      <div class="rgp-pkg-size" data-i18n="pkg_3_size">1–2 дня</div>
       <div class="rgp-pkg-name" data-i18n="pkg_3_name">Более 64 гостей</div>
       <ul class="rgp-pkg-features">
         <li data-i18n="pkg_3_f1">3–4 ротации</li>
         <li data-i18n="pkg_3_f2">Кейтеринг, afterparty</li>
       </ul>
+      <div class="rgp-pkg-size" data-i18n="pkg_3_size">1–2 дня</div>
       <div class="rgp-pkg-price" data-i18n="pkg_price">По запросу</div>
     </div>
   </div>
@@ -456,9 +456,9 @@
       pkg_eyebrow: 'Стоимость',
       pkg_title: 'Три типовых сценария. Финальный расчёт — под ваш запрос.',
       pkg_lead: 'Стоимость зависит от количества гостей, формата дня и набора опций. Соберём персональное предложение за 24 часа — или рассчитайте сами в калькуляторе.',
-      pkg_1_name: 'До 32 гостей', pkg_1_size: 'Полдня',
+      pkg_1_name: 'До 32 гостей', pkg_1_size: '3–4 часа',
       pkg_1_f1: '1 регата', pkg_1_f2: 'Базовая программа',
-      pkg_2_name: 'До 64 гостей', pkg_2_size: 'Полный день',
+      pkg_2_name: 'До 64 гостей', pkg_2_size: '6–8 часов',
       pkg_2_f1: '2 регаты', pkg_2_f2: 'Ротации команд',
       pkg_3_name: 'Более 64 гостей', pkg_3_size: '1–2 дня',
       pkg_3_f1: '3–4 ротации', pkg_3_f2: 'Кейтеринг, afterparty',
@@ -517,9 +517,9 @@
       pkg_eyebrow: 'Pricing',
       pkg_title: 'Three typical scenarios. Final pricing is tailored to your request.',
       pkg_lead: 'Cost depends on the number of guests, the format of the day, and the options selected. We build a personal proposal within 24 hours — or estimate it yourself in the calculator.',
-      pkg_1_name: 'Up to 32 guests', pkg_1_size: 'Half-day',
+      pkg_1_name: 'Up to 32 guests', pkg_1_size: '3–4 hours',
       pkg_1_f1: '1 race', pkg_1_f2: 'Basic programme',
-      pkg_2_name: 'Up to 64 guests', pkg_2_size: 'Full day',
+      pkg_2_name: 'Up to 64 guests', pkg_2_size: '6–8 hours',
       pkg_2_f1: '2 races', pkg_2_f2: 'Crew rotations',
       pkg_3_name: 'More than 64 guests', pkg_3_size: '1–2 days',
       pkg_3_f1: '3–4 rotations', pkg_3_f2: 'Catering, afterparty',
@@ -578,9 +578,9 @@
       pkg_eyebrow: 'Dəyər',
       pkg_title: 'Üç tipik ssenari. Yekun hesablama — sorğunuza görə.',
       pkg_lead: 'Qiymət qonaqların sayından, günün formatından və seçilən opsiyalardan asılıdır. Şəxsi təklifi 24 saat ərzində hazırlayırıq — və ya kalkulyatorda özünüz hesablayın.',
-      pkg_1_name: '32 qonağa qədər', pkg_1_size: 'Yarım gün',
+      pkg_1_name: '32 qonağa qədər', pkg_1_size: '3–4 saat',
       pkg_1_f1: '1 yarış', pkg_1_f2: 'Baza proqramı',
-      pkg_2_name: '64 qonağa qədər', pkg_2_size: 'Tam gün',
+      pkg_2_name: '64 qonağa qədər', pkg_2_size: '6–8 saat',
       pkg_2_f1: '2 yarış', pkg_2_f2: 'Komanda rotasiyası',
       pkg_3_name: '64-dən çox qonaq', pkg_3_size: '1–2 gün',
       pkg_3_f1: '3–4 rotasiya', pkg_3_f2: 'Keytrinq, afterparty',
