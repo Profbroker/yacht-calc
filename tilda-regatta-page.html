@@ -42,7 +42,7 @@
     background-position: center 45%;
     background-repeat: no-repeat;
     color: #fff;
-    min-height: 78vh;
+    min-height: 88vh;
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -60,6 +60,7 @@
   .rgp-hero .rgp-h1 { color: #fff; font-size: 52px; max-width: 620px; text-shadow: 0 2px 16px rgba(0,0,0,0.45); }
   .rgp-hero .rgp-lead { color: rgba(255,255,255,0.94); font-size: 19px; max-width: 560px; text-shadow: 0 1px 8px rgba(0,0,0,0.55); }
   .rgp-hero .rgp-btns { margin-top: 12px; }
+  .rgp-hero .rgp-btn { min-width: 260px; }
 
   /* Buttons */
   .rgp-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
@@ -81,7 +82,8 @@
   @media (max-width: 900px) {
     .rgp-grid--4, .rgp-grid--3, .rgp-grid--2 { grid-template-columns: 1fr; }
     .rgp-section { padding: 56px 20px; }
-    .rgp-hero { background-position: center 35%; min-height: 68vh; }
+    .rgp-hero { background-position: center 35%; min-height: 78vh; }
+    .rgp-hero .rgp-btn { min-width: 0; width: 100%; }
     .rgp-hero::before {
       background: linear-gradient(180deg, rgba(14,23,38,0.35) 0%, rgba(14,23,38,0.70) 50%, rgba(14,23,38,0.92) 100%);
     }
