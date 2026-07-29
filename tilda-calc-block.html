@@ -40,6 +40,7 @@
     min-width: 44px; text-align: center;
   }
   #yc-season-wrap .yc-btn { flex: 1; text-align: center; }
+  #yc-season-now { font-size: 13px; color: #16a34a; margin-top: 8px; }
   #yc-no-season {
     font-size: 13px; color: #9ca3af; background: #f9fafb;
     border: 1px solid #e5e7eb; border-radius: 8px;
@@ -96,10 +97,8 @@
 
   <div class="yc-group" id="yc-season-wrap">
     <div class="yc-label" id="yc-lbl-season"></div>
-    <div class="yc-btns">
-      <button class="yc-btn" data-season="high" onclick="ycSetSeason('high')" id="yc-btn-high"></button>
-      <button class="yc-btn" data-season="low"  onclick="ycSetSeason('low')"  id="yc-btn-low"></button>
-    </div>
+    <div class="yc-btns" id="yc-season-btns"></div>
+    <div id="yc-season-now"></div>
   </div>
 
   <div id="yc-no-season"></div>
@@ -150,8 +149,12 @@
       title:       'Рассчитать стоимость',
       yacht:       'Выберите яхту',
       season:      'Сезон',
-      season_high: '🌞 Высокий (май–сент)',
-      season_low:  '🍂 Низкий (окт–апр)',
+      season_high: '🌞 Высокий сезон',
+      season_mid:  '⛅ Средний сезон',
+      season_low:  '🍂 Низкий сезон',
+      season_now_high: '🗓 Сейчас высокий сезон',
+      season_now_mid:  '🗓 Сейчас средний сезон',
+      season_now_low:  '🗓 Сейчас низкий сезон',
       hours:       'Количество часов',
       currency:    'Валюта',
       book:        'Забронировать',
@@ -175,8 +178,12 @@
       title:       'Calculate price',
       yacht:       'Choose a yacht',
       season:      'Season',
-      season_high: '🌞 High season (May–Sep)',
-      season_low:  '🍂 Low season (Oct–Apr)',
+      season_high: '🌞 High season',
+      season_mid:  '⛅ Mid season',
+      season_low:  '🍂 Low season',
+      season_now_high: '🗓 High season now',
+      season_now_mid:  '🗓 Mid season now',
+      season_now_low:  '🗓 Low season now',
       hours:       'Number of hours',
       currency:    'Currency',
       book:        'Book now',
@@ -200,8 +207,12 @@
       title:       'Qiyməti hesabla',
       yacht:       'Yaxta seçin',
       season:      'Mövsüm',
-      season_high: '🌞 Yüksək mövsüm (may–sen)',
-      season_low:  '🍂 Aşağı mövsüm (okt–apr)',
+      season_high: '🌞 Yüksək mövsüm',
+      season_mid:  '⛅ Orta mövsüm',
+      season_low:  '🍂 Aşağı mövsüm',
+      season_now_high: '🗓 Hazırda yüksək mövsüm',
+      season_now_mid:  '🗓 Hazırda orta mövsüm',
+      season_now_low:  '🗓 Hazırda aşağı mövsüm',
       hours:       'Saat sayı',
       currency:    'Valyuta',
       book:        'Sifariş edin',
@@ -268,7 +279,7 @@
   // ── Состояние ─────────────────────────────────────────────────────────
   var yachts = [], settings = {}, seasonMap = {};
   var fxRates = { AZN: 1, USD: 0.588, RUB: 55 };
-  var curYacht = null, curSeason = 'high', curHours = 1, curCurrency = 'AZN';
+  var curYacht = null, curSeason = 'high', curRealSeason = 'high', curHours = 1, curCurrency = 'AZN';
 
   // ── CSV-парсер ────────────────────────────────────────────────────────
   function parseCSV(text) {
@@ -318,7 +329,8 @@
             en: (cols[idx.url_en] || '').trim(),
             az: (cols[idx.url_az] || '').trim()
           },
-          rates: {}
+          rates: {},
+          windows: {}
         };
       }
 
@@ -341,6 +353,12 @@
         }
       }
       groups[id].rates[season] = rObj;
+      if (season !== 'any') {
+        groups[id].windows[season] = {
+          start: (cols[idx.season_start] || '').trim(),
+          end:   (cols[idx.season_end]   || '').trim()
+        };
+      }
     }
 
     return order.map(function (id) { return groups[id]; });
@@ -370,6 +388,52 @@
     var after  = mo > hs.m || (mo === hs.m && da >= hs.d);
     var before = mo < he.m || (mo === he.m && da <= he.d);
     return (after && before) ? 'high' : 'low';
+  }
+
+  // ── Сезон по яхте: окно high (своё или глобальное) → high; окно mid → mid;
+  //    иначе самый низкий заданный сезон (fallback). «Низкий» не появится,
+  //    пока у яхты нет low-строки. ──
+  var SEASON_ORDER = ['high', 'mid', 'low'];
+  function inWindow(now, startStr, endStr) {
+    if (!startStr || !endStr) return false;
+    var s = startStr.split('.'), e = endStr.split('.');
+    var sD = +s[0], sM = +s[1], eD = +e[0], eM = +e[1];
+    var mo = now.getMonth() + 1, da = now.getDate();
+    var aft = (mo > sM) || (mo === sM && da >= sD);
+    var bef = (mo < eM) || (mo === eM && da <= eD);
+    return aft && bef;
+  }
+  function resolveSeason(y) {
+    if (!y.seasonal) return 'any';
+    var now = new Date(), w = y.windows || {}, r = y.rates || {};
+    if (r.high) {
+      var hs = (w.high && w.high.start) || settings.season_high_start || SETTINGS_FB.season_high_start;
+      var he = (w.high && w.high.end)   || settings.season_high_end   || SETTINGS_FB.season_high_end;
+      if (inWindow(now, hs, he)) return 'high';
+    }
+    if (r.mid && w.mid && inWindow(now, w.mid.start, w.mid.end)) return 'mid';
+    if (r.low) return 'low';
+    if (r.mid) return 'mid';
+    if (r.high) return 'high';
+    return 'any';
+  }
+  // Кнопки сезонов под конкретную яхту + подсказка «сейчас X сезон»
+  function applyYachtSeason(y) {
+    var box = document.getElementById('yc-season-btns');
+    var nowEl = document.getElementById('yc-season-now');
+    if (!box || !nowEl) return;
+    if (!y || !y.seasonal) { box.innerHTML = ''; nowEl.textContent = ''; return; }
+    curRealSeason = resolveSeason(y);
+    curSeason = curRealSeason;
+    var html = '';
+    SEASON_ORDER.forEach(function (s) {
+      if (!y.rates[s]) return;
+      html += '<button class="yc-btn' + (s === curSeason ? ' active' : '') +
+              '" data-season="' + s + '" onclick="ycSetSeason(\'' + s + '\')">' +
+              (T['season_' + s] || s) + '</button>';
+    });
+    box.innerHTML = html;
+    nowEl.textContent = T['season_now_' + curRealSeason] || '';
   }
 
   // ── Курсы валют ───────────────────────────────────────────────────────
@@ -425,7 +489,7 @@
   // а не на саму формулу расчёта.
   function calcPrice(yacht, hours, season) {
     var rSet = yacht.seasonal
-      ? (yacht.rates[season] || yacht.rates.high || yacht.rates.any || {})
+      ? (yacht.rates[season] || yacht.rates.mid || yacht.rates.low || yacht.rates.high || yacht.rates.any || {})
       : (yacht.rates.any     || yacht.rates.high || {});
     // «По согласованию»: если в диапазоне 1..hours есть час без заданной ставки
     // (пустая ячейка / прочерк в CSV) — цену не считаем, отдаём флаг.
@@ -445,8 +509,6 @@
     document.getElementById('yc-title').textContent         = T.title;
     document.getElementById('yc-lbl-yacht').textContent     = T.yacht;
     document.getElementById('yc-lbl-season').textContent    = T.season;
-    document.getElementById('yc-btn-high').textContent      = T.season_high;
-    document.getElementById('yc-btn-low').textContent       = T.season_low;
     document.getElementById('yc-lbl-hours').textContent     = T.hours;
     document.getElementById('yc-lbl-currency').textContent  = T.currency;
     document.getElementById('yc-no-season').textContent     = T.no_season;
@@ -541,6 +603,7 @@
     document.querySelectorAll('[data-yacht]').forEach(function (b) {
       b.classList.toggle('active', b.dataset.yacht === id);
     });
+    applyYachtSeason(curYacht);
     render();
   };
 
@@ -569,8 +632,6 @@
   applyLabels();
 
   Promise.all([loadData(), loadRates()]).then(function () {
-    curSeason = detectSeason(settings);
-
     var container = document.getElementById('yc-yachts');
     yachts.forEach(function (y, i) {
       var item = document.createElement('div');
@@ -595,19 +656,6 @@
       }
 
       container.appendChild(item);
-    });
-
-    document.querySelectorAll('[data-season]').forEach(function (b) {
-      b.classList.toggle('active', b.dataset.season === curSeason);
-    });
-
-    // Эмодзи сезонов из таблицы, текст из переводов (многоязычный)
-    ['high', 'low'].forEach(function (s) {
-      var info = seasonMap[s];
-      var btn = document.getElementById('yc-btn-' + s);
-      var emoji = (info && info.emoji) ? info.emoji + ' ' : '';
-      var label = T['season_' + s].replace(/^\S+\s/, ''); // текст без встроенного эмодзи
-      btn.textContent = emoji + label;
     });
 
     /* Pre-select яхты по slug в URL.
@@ -638,6 +686,7 @@
 
     document.getElementById('yc-loading').style.display = 'none';
     document.getElementById('yc-wrap').style.display    = '';
+    applyYachtSeason(curYacht);
     render();
 
     // Имена полей формы бронирования.
